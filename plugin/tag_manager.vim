@@ -16,7 +16,12 @@
 "
 " Installation:	Just drop this file in your plugin directory.
 "
-" Usage:		
+" Usage:		Command :TAGM toggles visibility of tag manager buffer.
+"				Command :TAGM_RebuildActive rebuilds all loaded tags files.
+"				Command :TAGM_RebuildAll rebuilds all registered tags files.
+"				Command :TAGM toggles visibility of tag manager buffer.
+" 				Parameter g:TAGM_window_height sets height of search buffer. Default = 15.
+" 				Parameter g:TAGM_tags sets height of search buffer. Default = 15.
 "
 " Version:		0.0.1
 "
@@ -39,23 +44,35 @@ if !exists("g:TAGM_window_height")
 	let g:TAGM_window_height = 15
 endif
 
+if !exists("g:TAGM_tags")
+	let g:TAGM_tags = {}
+endif
+
 command! -bang TAGM :call <SID>ToggleTagManagerBuffer()
-command! -bang TAGM_RebuildActive :call <SID>RebuildActiveTags()
-command! -bang TAGM_RebuildAll :call <SID>RebuildAllTags()
-
-fun <SID>RebuildActiveTags()
-endfun
-
-fun <SID>RebuildAllTags()
-endfun
+command! -bang TAGMRebuildActive :call <SID>RebuildActiveTags()
+command! -bang TAGMRebuildAll :call <SID>RebuildAllTags()
 
 fun <SID>OnRefresh()
+	autocmd! CursorMovedI <buffer>
+	setlocal nocul
+	setlocal ma
+
+	" clear buffer
+	exe 'normal ggdG'
+	
+	autocmd CursorMovedI <buffer> call <SID>OnCursorMovedI()
 endfun
 
 fun <SID>OnCursorMoved()
 endfun
 
 fun <SID>OnCursorMovedI()
+endfun
+
+fun! <SID>RebuildActiveTags()
+endfun
+
+fun! <SID>RebuildAllTags()
 endfun
 
 fun! <SID>ToggleTagManagerBuffer()
