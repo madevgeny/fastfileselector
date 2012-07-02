@@ -52,6 +52,10 @@ command! -bang TAGM :call <SID>ToggleTagManagerBuffer()
 command! -bang TAGMRebuildActive :call <SID>RebuildActiveTags()
 command! -bang TAGMRebuildAll :call <SID>RebuildAllTags()
 
+fun <SID>AbsPath(path)
+	return simplify(resolve(expand(a:path)))
+endfun
+
 fun <SID>OnRefresh()
 	autocmd! CursorMovedI <buffer>
 	setlocal nocul
@@ -59,7 +63,20 @@ fun <SID>OnRefresh()
 
 	" clear buffer
 	exe 'normal ggdG'
-	
+
+	" print tags files
+	for key in sort(keys(g:TAGM_tags))
+		let str=printf('%s',key)
+		call append(line('$'), <SID>AbsPath(str))
+	endfor
+
+	call append(line('$'), 'Loaded tags:')
+
+	for i in tagfiles()
+		let str=printf('%s',i)
+		call append(line('$'), <SID>AbsPath(str))
+	endfor
+	exe 'normal dd$'
 	autocmd CursorMovedI <buffer> call <SID>OnCursorMovedI()
 endfun
 
