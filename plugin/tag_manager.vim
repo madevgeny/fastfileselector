@@ -58,14 +58,14 @@ endfun
 
 fun GenTagFilesList()
 	" normalize tags paths
-	let keysToDelete = []
-	for key in keys(g:TAGM_tags)
-		nkey = NormalizePath(key)
-		if nkey != key
-			g:TAGM_tags[nkey] = g:TAGM_tags[key]
-			append(keysToDelete, key)
-		endif
-	endfor
+"	let keysToDelete = []
+"	for key in keys(g:TAGM_tags)
+"		nkey = NormalizePath(key)
+"		if nkey != key
+"			g:TAGM_tags[nkey] = g:TAGM_tags[key]
+"			append(keysToDelete, key)
+"		endif
+"	endfor
 
 	" validate properties
 
