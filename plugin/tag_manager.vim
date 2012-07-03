@@ -52,8 +52,25 @@ command! -bang TAGM :call <SID>ToggleTagManagerBuffer()
 command! -bang TAGMRebuildActive :call <SID>RebuildActiveTags()
 command! -bang TAGMRebuildAll :call <SID>RebuildAllTags()
 
-fun <SID>AbsPath(path)
+fun <SID>NormalizePath(path)
 	return simplify(resolve(expand(a:path)))
+endfun
+
+fun GenTagFilesList()
+	" normalize tags paths
+	let keysToDelete = []
+	for key in keys(g:TAGM_tags)
+		nkey = NormalizePath(key)
+		if nkey != key
+			g:TAGM_tags[nkey] = g:TAGM_tags[key]
+			append(keysToDelete, key)
+		endif
+	endfor
+
+	" validate properties
+
+	" add content of tags to g:TAGM_tags
+	"
 endfun
 
 fun <SID>OnRefresh()
