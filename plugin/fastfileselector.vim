@@ -29,6 +29,7 @@
 " TODO:
 " Add list of known file extentions.
 " Fix search for non ascii file names.
+" Auto enter to insert mode.
 
 if exists( "g:loaded_FAST_FILE_SELECTOR" )
 	finish
