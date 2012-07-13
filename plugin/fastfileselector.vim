@@ -18,7 +18,8 @@
 "
 " Usage:		Command :FFS toggles visibility of fast file selector buffer.
 " 				Parameter g:FFS_window_height sets height of search buffer. Default = 15.
-" 				Parameter g:FFS_ignore_list sets list of dirs/files to ignore use Unix shell-style wildcards. Default = ['.*'].
+" 				Parameter g:FFS_ignore_list sets list of dirs/files to ignore use Unix shell-style wildcards. Default = ['.*', '*.obj', '*.pdb', '*.res', '*.dll', '*.idb', '*.exe', '*.lib', '*.so'].
+"				Parameter g:FFS_ignore_case, if set letters case will be ignored during search. On windows default = 1, on unix default = 0.
 "
 " Version:		0.0.1
 "
@@ -46,8 +47,16 @@ if !exists("g:FFS_window_height")
 	let g:FFS_window_height = 15
 endif
 
+if !exists("g:FFS_ignore_case")
+	if has('win32') || has('win64')
+		let g:FFS_ignore_case = 1
+	else
+		let g:FFS_ignore_case = 0
+	endif
+endif
+
 if !exists("g:FFS_ignore_list")
-	let g:FFS_ignore_list = ['.*']
+	let g:FFS_ignore_list = ['.*', '*.obj', '*.pdb', '*.res', '*.dll', '*.idb', '*.exe', '*.lib', '*.so']
 endif
 
 if !exists("s:file_list")
@@ -71,6 +80,13 @@ from os import walk, getcwd
 from os.path import join, isfile, abspath, split
 from fnmatch import fnmatch
 
+import vim
+
+if vim.eval("g:FFS_ignore_case"):
+	caseMod = lambda x: x.lower()
+else:
+	caseMod = lambda x: x
+
 def find_tags(path):
 	p = abspath(path)
 
@@ -88,7 +104,7 @@ def find_tags(path):
 def scan_dir(path, ignoreList):
 	def in_ignore_list(f):
 		for i in ignoreList:
-			if fnmatch(f, i):
+			if fnmatch(caseMod(f), caseMod(i)):
 				return True
 
 		return False
@@ -103,7 +119,6 @@ def scan_dir(path, ignoreList):
 
 	return fileList
 
-import vim
 wd = getcwd()
 path = find_tags(wd)
 if path == None:
@@ -191,9 +206,14 @@ def check_symbols(s, symbols):
 
 	return res
 
-symbols = vim.eval('str')
+if vim.eval("g:FFS_ignore_case"):
+	caseMod = lambda x: x.lower()
+else:
+	caseMod = lambda x: x
+
+symbols = caseMod(vim.eval('str'))
 if len(symbols) != 0:
-	fileList = map(lambda x: (check_symbols(x, symbols), x), vim.eval('s:file_list'))
+	fileList = map(lambda x: (check_symbols(caseMod(x), symbols), x), vim.eval('s:file_list'))
 	fileList = filter(lambda x: x[0] != 0, fileList)
 	fileList.sort(key=operator.itemgetter(0))
 
