@@ -68,8 +68,22 @@ fun <SID>GenFileList()
 python << EOF
 
 from os import walk, getcwd
-from os.path import join
+from os.path import join, isfile, abspath, split
 from fnmatch import fnmatch
+
+def find_tags(path):
+	p = abspath(path)
+
+	# need to remove last / for right splitting
+	if p[-1] == '/' or p[-1] == '\\':
+		p = path[:-1]
+	
+	while not isfile(join(p, 'tags')):
+		p = split(p)[0]
+		if p == '':
+			return None
+
+	return p
 
 def scan_dir(path, ignoreList):
 	def in_ignore_list(f):
@@ -90,7 +104,13 @@ def scan_dir(path, ignoreList):
 	return fileList
 
 import vim
-fileList = scan_dir(getcwd(), vim.eval("g:FFS_ignore_list"))
+wd = getcwd()
+path = find_tags(wd)
+if path == None:
+	fileList = scan_dir(wd, vim.eval("g:FFS_ignore_list"))
+else:
+	fileList = scan_dir(path, vim.eval("g:FFS_ignore_list"))
+
 if len(fileList) != 0:
 	vim.command("let s:file_list = ['%s']" % "','".join(fileList))
 else:
