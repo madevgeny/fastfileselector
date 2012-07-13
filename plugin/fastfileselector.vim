@@ -26,6 +26,10 @@
 " ChangeLog:	0.0.1:	 Initial version.
 "====================================================================================
 
+" TODO:
+" Add list of known file extentions.
+" Fix search for non ascii file names.
+
 if exists( "g:loaded_FAST_FILE_SELECTOR" )
 	finish
 endif
