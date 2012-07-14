@@ -29,6 +29,7 @@
 " TODO:
 " Add list of known file extentions.
 " Show files only with symbols in right order.
+" Fix highlight of \.
 
 if exists( "g:loaded_FAST_FILE_SELECTOR" )
 	finish
