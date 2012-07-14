@@ -150,6 +150,7 @@ fun <SID>OnRefresh()
 	cal append(0,s:user_line)
 	exe 'normal dd$'
 	cal append(1,s:filtered_file_list)
+	exe 'normal! i'
 	autocmd CursorMovedI <buffer> call <SID>OnCursorMovedI()
 endfun
 
@@ -266,6 +267,19 @@ fun <SID>GotoFile()
 	exe 'normal Q'
 endfun
 
+fun <SID>OnBufLeave()
+	if s:prev_mode != 'i'
+		exe 'stopinsert'
+	endif
+endfun
+
+fun <SID>OnBufEnter()
+	let s:prev_mode = mode()
+	exe 'startinsert'
+
+	call <SID>OnRefresh()
+endfun
+
 fun! <SID>ToggleFastFileSelectorBuffer()
 	if !exists("s:tm_winnr") || s:tm_winnr==-1
 		exe "bo".g:FFS_window_height."sp FastFileSelector"
@@ -277,17 +291,20 @@ fun! <SID>ToggleFastFileSelectorBuffer()
 		
 		setlocal buftype=nofile
 		setlocal noswapfile
-		setlocal insertmode
+
+		let s:prev_mode = mode()
+		exe 'startinsert'
 
 		let s:user_line=''
 		if !exists("s:first_time")
 			let s:first_time=1
 
 			autocmd BufUnload <buffer> exe 'let s:tm_winnr=-1'
+			autocmd BufLeave <buffer> call <SID>OnBufLeave()
 			autocmd CursorMoved <buffer> call <SID>OnCursorMoved()
 			autocmd CursorMovedI <buffer> call <SID>OnCursorMovedI()
 			autocmd VimResized <buffer> call <SID>OnRefresh()
-			autocmd BufEnter <buffer> call <SID>OnRefresh()
+			autocmd BufEnter <buffer> call <SID>OnBufEnter()
 		endif
 		
 		cal <SID>GenFileList()
