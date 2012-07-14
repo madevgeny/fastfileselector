@@ -18,12 +18,12 @@
 "
 " Usage:		Command :FFS toggles visibility of fast file selector buffer.
 " 				Parameter g:FFS_window_height sets height of search buffer. Default = 15.
-" 				Parameter g:FFS_ignore_list sets list of dirs/files to ignore use Unix shell-style wildcards. Default = ['.*', '*.obj', '*.pdb', '*.res', '*.dll', '*.idb', '*.exe', '*.lib', '*.so'].
+" 				Parameter g:FFS_ignore_list sets list of dirs/files to ignore use Unix shell-style wildcards. Default = ['.*', '*.bak', '~*', '*.obj', '*.pdb', '*.res', '*.dll', '*.idb', '*.exe', '*.lib', '*.so'].
 "				Parameter g:FFS_ignore_case, if set letters case will be ignored during search. On windows default = 1, on unix default = 0.
 "
-" Version:		0.0.1
+" Version:		1.0.0
 "
-" ChangeLog:	0.0.1:	 Initial version.
+" ChangeLog:	1.0.0:	 Initial version.
 "====================================================================================
 
 " TODO:
@@ -60,7 +60,7 @@ if !exists("g:FFS_ignore_case")
 endif
 
 if !exists("g:FFS_ignore_list")
-	let g:FFS_ignore_list = ['.*', '*.obj', '*.pdb', '*.res', '*.dll', '*.idb', '*.exe', '*.lib', '*.so']
+	let g:FFS_ignore_list = ['.*', '*.bak', '~*', '*.obj', '*.pdb', '*.res', '*.dll', '*.idb', '*.exe', '*.lib', '*.so']
 endif
 
 if !exists("s:file_list")
