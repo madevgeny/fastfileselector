@@ -30,6 +30,7 @@
 " Add list of known file extentions.
 " Show files only with symbols in right order.
 " Fix highlight of \.
+" Try to fix case insensitive search for non ascii characters
 
 if exists( "g:loaded_FAST_FILE_SELECTOR" )
 	finish
