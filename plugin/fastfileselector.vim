@@ -30,7 +30,6 @@
 " Add list of known file extentions.
 " Fix search for non ascii file names.
 " Auto enter to insert mode.
-" Clear search string every time.
 " Show files only with symbols in right order.
 
 if exists( "g:loaded_FAST_FILE_SELECTOR" )
@@ -264,6 +263,7 @@ fun! <SID>ToggleFastFileSelectorBuffer()
 		
 		setlocal buftype=nofile
 		setlocal noswapfile
+		setlocal insertmode
 
 		let s:user_line=''
 		if !exists("s:first_time")
