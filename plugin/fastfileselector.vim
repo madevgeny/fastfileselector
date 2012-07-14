@@ -163,6 +163,20 @@ fun <SID>OnCursorMoved()
 	endif
 endfun
 
+fun <SID>UpdateSyntax(str)
+	" Apply color changes
+	exe 'syn off | syn on'
+	if a:str != ''
+		if g:FFS_ignore_case == 0
+			exe 'syn match Identifier #['.a:str.']#'
+		else
+			exe 'syn match Identifier #['.tolower(a:str).toupper(a:str).']#'
+		endif
+	else
+		exe 'syn match Identifier #^$#'
+	endif
+endfun
+
 fun <SID>OnCursorMovedI()
 	let l = getpos(".")[1]
 	if l > 1
@@ -174,13 +188,7 @@ fun <SID>OnCursorMovedI()
 
 		let str=getline('.')
 		if s:user_line!=str
-			" Apply color changes
-			exe 'syn off | syn on'
-			if str != ''
-				exe 'syn match Identifier #['.join(split(str), '|').']#'
-			else
-				exe 'syn match Identifier #^$#'
-			endif
+			call <SID>UpdateSyntax(str)
 			let save_cursor = winsaveview()
 python << EOF
 import vim
