@@ -28,7 +28,6 @@
 
 " TODO:
 " Add list of known file extentions.
-" Fix search for non ascii file names.
 " Show files only with symbols in right order.
 
 if exists( "g:loaded_FAST_FILE_SELECTOR" )
@@ -81,7 +80,7 @@ command! -bang FFS :call <SID>ToggleFastFileSelectorBuffer()
 fun <SID>GenFileList()
 python << EOF
 
-from os import walk, getcwd
+from os import walk, getcwdu
 from os.path import join, isfile, abspath, split
 from fnmatch import fnmatch
 
@@ -124,7 +123,7 @@ def scan_dir(path, ignoreList):
 
 	return fileList
 
-wd = getcwd()
+wd = getcwdu()
 path = find_tags(wd)
 if path == None:
 	fileList = scan_dir(wd, vim.eval("g:FFS_ignore_list"))
@@ -132,7 +131,7 @@ else:
 	fileList = scan_dir(path, vim.eval("g:FFS_ignore_list"))
 
 if len(fileList) != 0:
-	vim.command("let s:file_list = ['%s']" % "','".join(fileList))
+	vim.command("let s:file_list = ['%s']" % "','".join(map(lambda x: x.encode("utf-8"), fileList)))
 else:
 	vim.command("let s:file_list = []")
 EOF
