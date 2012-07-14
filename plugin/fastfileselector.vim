@@ -31,6 +31,7 @@
 " Show files only with symbols in right order.
 " Fix highlight of \.
 " Try to fix case insensitive search for non ascii characters
+" Fix wrong toggle after exit by :q
 
 if exists( "g:loaded_FAST_FILE_SELECTOR" )
 	finish
@@ -168,15 +169,16 @@ endfun
 
 fun <SID>UpdateSyntax(str)
 	" Apply color changes
-	exe 'syn off | syn on'
 	if a:str != ''
+		setlocal syntax=off
+		setlocal syntax=on
 		if g:FFS_ignore_case == 0
 			exe 'syn match Identifier #['.a:str.']#'
 		else
 			exe 'syn match Identifier #['.tolower(a:str).toupper(a:str).']#'
 		endif
 	else
-		exe 'syn match Identifier #^$#'
+		setlocal syntax=off
 	endif
 endfun
 
