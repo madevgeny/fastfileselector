@@ -170,7 +170,6 @@ endfun
 fun <SID>UpdateSyntax(str)
 	" Apply color changes
 	if a:str != ''
-		setlocal syntax=off
 		setlocal syntax=on
 		if g:FFS_ignore_case == 0
 			exe 'syn match Identifier #['.a:str.']#'
