@@ -32,6 +32,7 @@
 " Fix highlight of \.
 " Try to fix case insensitive search for non ascii characters
 " Fix wrong toggle after exit by :q
+" Remove code before call longest_substring_size
 
 if exists( "g:loaded_FAST_FILE_SELECTOR" )
 	finish
