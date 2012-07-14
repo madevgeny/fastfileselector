@@ -191,7 +191,6 @@ fun <SID>OnCursorMovedI()
 
 		let str=getline('.')
 		if s:user_line!=str
-			call <SID>UpdateSyntax(str)
 			let save_cursor = winsaveview()
 python << EOF
 import vim
@@ -249,6 +248,7 @@ EOF
 			let s:user_line=str
 			call <SID>OnRefresh()
 			cal winrestview(save_cursor)
+			call <SID>UpdateSyntax(str)
 		endif
 	endif
 endfun
