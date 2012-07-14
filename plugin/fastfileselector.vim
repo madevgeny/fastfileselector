@@ -174,6 +174,13 @@ fun <SID>OnCursorMovedI()
 
 		let str=getline('.')
 		if s:user_line!=str
+			" Apply color changes
+			exe 'syn off | syn on'
+			if str != ''
+				exe 'syn match Identifier #['.join(split(str), '|').']#'
+			else
+				exe 'syn match Identifier #^$#'
+			endif
 			let save_cursor = winsaveview()
 python << EOF
 import vim
