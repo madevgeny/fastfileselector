@@ -31,7 +31,7 @@
 " Fix search for non ascii file names.
 " Auto enter to insert mode.
 " Clear search string every time.
-" Show files onli with symbols in right order.
+" Show files only with symbols in right order.
 
 if exists( "g:loaded_FAST_FILE_SELECTOR" )
 	finish
@@ -102,8 +102,8 @@ def find_tags(path):
 		p = path[:-1]
 	
 	while not isfile(join(p, 'tags')):
-		p = split(p)[0]
-		if p == '':
+		p, h = split(p)
+		if p == '' or h == '':
 			return None
 
 	return p
@@ -265,8 +265,8 @@ fun! <SID>ToggleFastFileSelectorBuffer()
 		setlocal buftype=nofile
 		setlocal noswapfile
 
+		let s:user_line=''
 		if !exists("s:first_time")
-			let s:user_line=''
 			let s:first_time=1
 
 			autocmd BufUnload <buffer> exe 'let s:tm_winnr=-1'
