@@ -202,17 +202,14 @@ def longest_substring_size(str1, str2):
 	n1 = len(str1)
 	n2 = len(str2)
 
-	L = [0] * n1 * n2
+	L = [0 for i in range((n1 + 1) * (n2 + 1))]
 
 	res = 0
 	for i in range(n1):
 		for j in range(n2):
 			if str1[i] == str2[j]:
-				ind = i * n2 + j
-				if i == 0 or j == 0:
-					L[ind] = 1
-				else:
-					L[ind] = L[(i - 1) * n2 + (j - 1)] + 1
+				ind = (i + 1) * n2 + (j + 1)
+				L[ind] = L[i * n2 + j] + 1
 				if L[ind] > res:
 					res = L[ind]
 	return res
