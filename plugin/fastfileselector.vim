@@ -94,7 +94,8 @@ from fnmatch import fnmatch
 import vim
 
 if vim.eval("g:FFS_ignore_case"):
-	caseMod = lambda x: x.lower()
+	import string
+	caseMod = string.lower
 else:
 	caseMod = lambda x: x
 
@@ -246,7 +247,8 @@ def check_symbols(s, symbols):
 	return res
 
 if vim.eval("g:FFS_ignore_case"):
-	caseMod = lambda x: x.lower()
+	import string
+	caseMod = string.lower
 else:
 	caseMod = lambda x: x
 
