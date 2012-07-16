@@ -115,9 +115,10 @@ def find_tags(path):
 	return p
 
 def scan_dir(path, ignoreList):
+	ignoreList = map(caseMod, ignoreList)
 	def in_ignore_list(f):
 		for i in ignoreList:
-			if fnmatch(caseMod(f), caseMod(i)):
+			if fnmatch(caseMod(f), i):
 				return True
 
 		return False
