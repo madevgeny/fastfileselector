@@ -12,9 +12,10 @@ else:
 	caseMod = lambda x: x
 
 def scan_dir(path, ignoreList):
+	ignoreList = map(caseMod, ignoreList)
 	def in_ignore_list(f):
 		for i in ignoreList:
-			if fnmatch(caseMod(f), caseMod(i)):
+			if fnmatch(caseMod(f), i):
 				return True
 
 		return False
@@ -87,7 +88,7 @@ if __name__=='__main__':
 	ignore_list = ['.*', '*.bak', '~*', '*.obj', '*.pdb', '*.res', '*.dll', '*.idb', '*.exe', '*.lib', '*.so']
 	symbols = caseMod('NGModel')
 
-	timing(scan_dir, 100, {'path' : path, 'ignoreList' : ignore_list})
+	timing(scan_dir, 5, {'path' : path, 'ignoreList' : ignore_list})
 	
 	fileList = scan_dir(path, ignore_list)
 	fileList = map(lambda x: (check_symbols(caseMod(x), symbols), x), fileList)
