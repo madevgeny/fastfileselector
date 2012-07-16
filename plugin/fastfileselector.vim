@@ -36,6 +36,7 @@
 " Create benchmarks of python code.
 " Optimize using array.
 " Optimize setting local functions.
+" Cache of directories.
 
 if exists( "g:loaded_FAST_FILE_SELECTOR" )
 	finish
