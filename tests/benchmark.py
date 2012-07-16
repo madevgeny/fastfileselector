@@ -1,28 +1,15 @@
-import timeit
+import time
 
 from os import walk, getcwdu
 from os.path import join, isfile, abspath, split
 from fnmatch import fnmatch
+import operator
 
-if 1
+if 1:
 	import string
 	caseMod = string.lower
 else:
 	caseMod = lambda x: x
-
-def find_tags(path):
-	p = abspath(path)
-
-	# need to remove last / for right splitting
-	if p[-1] == '/' or p[-1] == '\\':
-		p = path[:-1]
-	
-	while not isfile(join(p, 'tags')):
-		p, h = split(p)
-		if p == '' or h == '':
-			return None
-
-	return p
 
 def scan_dir(path, ignoreList):
 	def in_ignore_list(f):
@@ -41,20 +28,6 @@ def scan_dir(path, ignoreList):
 				dirs.remove(j)
 
 	return fileList
-
-wd = getcwdu()
-path = find_tags(wd)
-if path == None:
-	fileList = scan_dir(wd, vim.eval("g:FFS_ignore_list"))
-else:
-	fileList = scan_dir(path, vim.eval("g:FFS_ignore_list"))
-
-if len(fileList) != 0:
-	vim.command("let s:file_list = ['%s']" % "','".join(map(lambda x: x.encode("utf-8"), fileList)))
-else:
-	vim.command("let s:file_list = []")
-
-import operator
 
 def longest_substring_size(str1, str2):
 	n1 = len(str1)
@@ -100,21 +73,23 @@ def check_symbols(s, symbols):
 
 	return res
 
-if vim.eval("g:FFS_ignore_case"):
-	caseMod = lambda x: x.lower()
-else:
-	caseMod = lambda x: x
+def timing(f, n, a):
+	print f.__name__,
+	r = range(n)
+	t1 = time.clock()
+	for i in r:
+	    f(**a); f(**a); f(**a); f(**a); f(**a); f(**a); f(**a); f(**a); f(**a); f(**a)
+	t2 = time.clock()
+	print round(t2-t1, 3)
 
-symbols = caseMod(vim.eval('str'))
-if len(symbols) != 0:
-	fileList = map(lambda x: (check_symbols(caseMod(x), symbols), x), vim.eval('s:file_list'))
+if __name__=='__main__':
+	path = getcwdu()
+	ignore_list = ['.*', '*.bak', '~*', '*.obj', '*.pdb', '*.res', '*.dll', '*.idb', '*.exe', '*.lib', '*.so']
+	symbols = caseMod('NGModel')
+
+	timing(scan_dir, 100, {'path' : path, 'ignoreList' : ignore_list})
+	
+	fileList = scan_dir(path, ignore_list)
+	fileList = map(lambda x: (check_symbols(caseMod(x), symbols), x), fileList)
 	fileList = filter(lambda x: x[0] != 0, fileList)
 	fileList.sort(key=operator.itemgetter(0))
-
-	if len(fileList) != 0:
-		vim.command("let s:filtered_file_list = ['%s']" % "','".join(map(lambda x: x[1], fileList)))
-	else:
-		vim.command("let s:filtered_file_list = []")
-else:
-	vim.command("let s:filtered_file_list = s:file_list")
-
