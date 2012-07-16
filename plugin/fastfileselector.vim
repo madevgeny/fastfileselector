@@ -33,6 +33,9 @@
 " Try to fix case insensitive search for non ascii characters
 " Fix wrong toggle after exit by :q
 " Remove code before call longest_substring_size
+" Create benchmarks of python code.
+" Optimize using array.
+" Optimize setting local functions.
 
 if exists( "g:loaded_FAST_FILE_SELECTOR" )
 	finish
