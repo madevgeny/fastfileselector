@@ -34,7 +34,6 @@
 " Fix wrong toggle after exit by :q
 " Remove code before call longest_substring_size
 " Create benchmarks of python code.
-" Optimize using array.
 " Optimize setting local functions.
 " Cache of directories.
 
