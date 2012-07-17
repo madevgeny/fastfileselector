@@ -28,12 +28,10 @@
 
 " TODO:
 " Add list of known file extentions.
-" Show files only with symbols in right order.
 " Fix highlight of \.
 " Try to fix case insensitive search for non ascii characters
 " Fix wrong toggle after exit by :q
 " Remove code before call longest_substring_size
-" Optimize setting local functions.
 " Cache of directories.
 " Dedicated functions check_symbols for 1 and 2 symbols.
 
