@@ -33,9 +33,11 @@
 " Try to fix case insensitive search for non ascii characters
 " Fix wrong toggle after exit by :q
 " Remove code before call longest_substring_size
-" Create benchmarks of python code.
 " Optimize setting local functions.
 " Cache of directories.
+" Incremental search.
+" Dedicated functions check_symbols for 1 and 2 symbols.
+" Use find to find longest substring.
 
 if exists( "g:loaded_FAST_FILE_SELECTOR" )
 	finish

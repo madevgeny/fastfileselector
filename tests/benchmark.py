@@ -86,11 +86,15 @@ def timing(f, n, a):
 if __name__=='__main__':
 	path = getcwdu()
 	ignore_list = ['.*', '*.bak', '~*', '*.obj', '*.pdb', '*.res', '*.dll', '*.idb', '*.exe', '*.lib', '*.so']
-	symbols = caseMod('NGModel')
+	symbols = caseMod('bra')
 
-	timing(scan_dir, 5, {'path' : path, 'ignoreList' : ignore_list})
+#	timing(scan_dir, 5, {'path' : path, 'ignoreList' : ignore_list})
 	
-	fileList = scan_dir(path, ignore_list)
-	fileList = map(lambda x: (check_symbols(caseMod(x), symbols), x), fileList)
-	fileList = filter(lambda x: x[0] != 0, fileList)
-	fileList.sort(key=operator.itemgetter(0))
+	file_list = scan_dir(path, ignore_list)
+
+	def filterFileList(fileList):
+		fileList = map(lambda x: (check_symbols(caseMod(x), symbols), x), fileList)
+		fileList = filter(lambda x: x[0] != 0, fileList)
+		fileList.sort(key=operator.itemgetter(0))
+
+	timing(filterFileList, 5, {'fileList':file_list})
