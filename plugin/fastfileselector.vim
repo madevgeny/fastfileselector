@@ -35,7 +35,6 @@
 " Remove code before call longest_substring_size
 " Optimize setting local functions.
 " Cache of directories.
-" Incremental search.
 " Dedicated functions check_symbols for 1 and 2 symbols.
 
 if exists( "g:loaded_FAST_FILE_SELECTOR" )
@@ -255,8 +254,14 @@ else:
 	caseMod = lambda x: x
 
 symbols = caseMod(vim.eval('str'))
+oldSymbols = caseMod(vim.eval('s:user_line'))
+if symbols.find(oldSymbols) != -1:
+	fileListVar = 's:filtered_file_list'
+else:
+	fileListVar = 's:file_list'
+
 if len(symbols) != 0:
-	fileList = map(lambda x: (check_symbols(caseMod(x), symbols), x), vim.eval('s:file_list'))
+	fileList = map(lambda x: (check_symbols(caseMod(x), symbols), x), vim.eval(fileListVar))
 	fileList = filter(lambda x: x[0] != 0, fileList)
 	fileList.sort(key=operator.itemgetter(0))
 
