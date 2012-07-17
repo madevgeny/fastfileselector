@@ -95,6 +95,6 @@ if __name__=='__main__':
 	def filterFileList(fileList):
 		fileList = map(lambda x: (check_symbols(caseMod(x), symbols), x), fileList)
 		fileList = filter(lambda x: x[0] != 0, fileList)
-		fileList.sort(key=operator.itemgetter(0))
+		fileList.sort(key=operator.itemgetter(0, 1))
 
 	timing(filterFileList, 5, {'fileList':file_list})
