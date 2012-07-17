@@ -37,7 +37,6 @@
 " Cache of directories.
 " Incremental search.
 " Dedicated functions check_symbols for 1 and 2 symbols.
-" Use find to find longest substring.
 
 if exists( "g:loaded_FAST_FILE_SELECTOR" )
 	finish
