@@ -264,7 +264,7 @@ if len(symbols) != 0:
 	fileList.sort(key=operator.itemgetter(0))
 
 	if len(fileList) != 0:
-		vim.command("let s:filtered_file_list = ['%s']" % "','".join(map(lambda x: x[1], fileList)))
+		vim.command("let s:filtered_file_list = ['%s']" % "','".join(zip(*fileList)[1]))
 	else:
 		vim.command("let s:filtered_file_list = []")
 else:
