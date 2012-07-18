@@ -12,9 +12,27 @@
 "				GNU General Public License for more details
 "				(http://www.gnu.org/copyleft/gpl.txt).
 "
-" Description:	
+" Description:	FileFastSelector plugin tries to provide fast way to open
+"				files using minimal number of keystrokes. It's inspired by
+"				Command-T plugin but requires python support instead of ruby.
+"
+"				Files are selected by typing characters that appear in their paths, 
+"				and are ordered by length of common substring with search string.
+"
+"				Root directory for search is current vim directory. Or if tags
+"				file exists somewhere in parent directories its path will
+"				be used as root.
+"
+"				Source code is also available on bitbucket: https://bitbucket.org/madevgeny/fastfileselector.
+"
+" Note:			FileFastSelector requires a version of VIM with Python support enabled.
 "
 " Installation:	Just drop this file in your plugin directory.
+"				If you use Vundle (https://github.com/gmarik/vundle/), you could add 
+"
+"				Bundle('https://bitbucket.org/madevgeny/fastfileselector.git')
+"
+"				to you Vundle config to install yate.
 "
 " Usage:		Command :FFS toggles visibility of fast file selector buffer.
 " 				Parameter g:FFS_window_height sets height of search buffer. Default = 15.
@@ -33,7 +51,7 @@
 " Fix wrong toggle after exit by :q
 " Remove code before call longest_substring_size
 " Cache of directories.
-" Write description.
+" Add support GetLatestVimScripts.
 
 if exists( "g:loaded_FAST_FILE_SELECTOR" )
 	finish
