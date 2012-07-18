@@ -34,7 +34,6 @@
 " Remove code before call longest_substring_size
 " Cache of directories.
 " Dedicated functions check_symbols for 1 and 2 symbols.
-" Highlight common path.
 " Import separate python file with functions.
 " Write description.
 
@@ -75,6 +74,10 @@ if !exists("s:file_list")
 	let s:file_list = []
 endif
 
+if !exists("s:base_path_length")
+	let s:base_path_length = 0
+endif
+
 if !exists("s:filtered_file_list")
 	let s:filtered_file_list = s:file_list
 endif
@@ -84,6 +87,25 @@ if !exists("s:user_line")
 endif
 
 command! -bang FFS :call <SID>ToggleFastFileSelectorBuffer()
+
+fun <SID>UpdateSyntax(str)
+	" Apply color changes
+	setlocal syntax=on
+
+	hi def link FFS_matches Identifier
+	hi def link FFS_base_path Comment	
+	
+	exe 'syn match FFS_base_path #^.\{'.s:base_path_length.'\}# nextgroup=Identifier'
+	if a:str != ''
+		if g:FFS_ignore_case == 0
+			exe 'syn match FFS_matches #['.a:str.']#'
+		else
+			exe 'syn match FFS_matches #['.tolower(a:str).toupper(a:str).']#'
+		endif
+	else
+		exe 'hi clear FFS_matches'
+	endif
+endfun
 
 fun <SID>GenFileList()
 python << EOF
@@ -144,12 +166,15 @@ if path == None:
 	
 fileList = scan_dir(path, vim.eval("g:FFS_ignore_list"))
 
+vim.command('let s:base_path_length=%d' % len(path.encode("utf-8")))
+
 if len(fileList) != 0:
-	vim.command("let s:file_list = [%s]" % ",".join(map(lambda x: "['%s','%s']" % x, fileList)))
+	vim.command("let s:file_list=[%s]" % ",".join(map(lambda x: "['%s','%s']" % x, fileList)))
 else:
-	vim.command("let s:file_list = []")
+	vim.command("let s:file_list=[]")
 EOF
-let s:filtered_file_list = s:file_list
+	let s:filtered_file_list = s:file_list
+	call <SID>UpdateSyntax('')
 endfun
 
 fun <SID>OnRefresh()
@@ -165,6 +190,7 @@ fun <SID>OnRefresh()
 	let fl = map(copy(s:filtered_file_list), 'v:val[1]')
 	cal append(1, fl)
 	exe 'normal! i'
+
 	autocmd CursorMovedI <buffer> call <SID>OnCursorMovedI()
 endfun
 
@@ -176,20 +202,6 @@ fun <SID>OnCursorMoved()
 	else
 		setlocal nocul
 		setlocal ma
-	endif
-endfun
-
-fun <SID>UpdateSyntax(str)
-	" Apply color changes
-	if a:str != ''
-		setlocal syntax=on
-		if g:FFS_ignore_case == 0
-			exe 'syn match Identifier #['.a:str.']#'
-		else
-			exe 'syn match Identifier #['.tolower(a:str).toupper(a:str).']#'
-		endif
-	else
-		setlocal syntax=off
 	endif
 endfun
 
