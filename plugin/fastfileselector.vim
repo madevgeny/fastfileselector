@@ -52,6 +52,7 @@
 " Remove code before call longest_substring_size
 " Cache of directories.
 " Add support GetLatestVimScripts.
+" Fix search files with '
 
 if exists( "g:loaded_FAST_FILE_SELECTOR" )
 	finish
