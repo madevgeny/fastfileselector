@@ -78,14 +78,34 @@ def check_symbols_1(s, symbols):
 
 def check_symbols_2(s, symbols):
 	pos = s.find(symbols[0])
-	if pos != -1:
-		if s.rfind(symbols[1]) < pos:
-			return 0
-	else:
+	if pos == -1:
+		return 0
+
+	if s.rfind(symbols[1]) < pos:
 		return 0
 
 	if s.find(symbols) != -1:
 		return -2
+
+	return -1
+
+def check_symbols_3(s, symbols):
+	p1 = s.find(symbols[0])
+	if p1 == -1:
+		return 0
+
+	p2 = s.rfind(symbols[2])
+	if p2 < p1:
+		return 0
+
+	if s[p1 : p2 + 1].find(symbols[1]) == -1:
+		return 0
+
+	if s.find(symbols) != -1:
+		return -3
+	if s.find(symbols[:2]) != -1 or s.find(symbols[1:]) != -1:
+		return -2
+
 	return -1
 
 def timing(f, n, a):
@@ -101,7 +121,6 @@ if __name__=='__main__':
 	path = getcwdu()
 	ignore_list = ['.*', '*.bak', '~*', '*.obj', '*.pdb', '*.res', '*.dll', '*.idb', '*.exe', '*.lib', '*.so']
 	symbols = caseMod('bra')
-	symbols = caseMod('br')
 
 #	timing(scan_dir, 5, {'path' : path, 'ignoreList' : ignore_list})
 	
@@ -113,6 +132,8 @@ if __name__=='__main__':
 			check_symbols = check_symbols_1
 		elif nSymbols == 2:
 			check_symbols = check_symbols_2
+		elif nSymbols == 3:
+			check_symbols = check_symbols_3
 		else:
 			check_symbols = check_symbols_uni
 
