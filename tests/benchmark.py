@@ -50,8 +50,7 @@ def longest_substring_size(str1, str2):
 					res = L[ind]
 	return res
 
-def check_symbols(s, symbols):
-	res = 0
+def check_symbols_uni(s, symbols):
 	prevSymbol = None
 	prevSymbolPos = -1
 	for i in symbols:
@@ -64,19 +63,30 @@ def check_symbols(s, symbols):
 					pos = s.find(i, pos + 1)
 					if pos == -1:
 						return 0
-					else:
-						res -= 1
-				else:
-					res -= 1
 
 			prevSymbol = i
 			prevSymbolPos = pos
 
-	res -= 1
-
-	res -= (longest_substring_size(s, symbols) - 1) * 2
+	res = longest_substring_size(s, symbols) 
 
 	return res
+
+def check_symbols_1(s, symbols):
+	if s.find(symbols[0]) == -1:
+		return 0
+	return -1
+
+def check_symbols_2(s, symbols):
+	pos = s.find(symbols[0])
+	if pos != -1:
+		if s.rfind(symbols[1]) < pos:
+			return 0
+	else:
+		return 0
+
+	if s.find(symbols) != -1:
+		return -2
+	return -1
 
 def timing(f, n, a):
 	print f.__name__,
@@ -91,12 +101,21 @@ if __name__=='__main__':
 	path = getcwdu()
 	ignore_list = ['.*', '*.bak', '~*', '*.obj', '*.pdb', '*.res', '*.dll', '*.idb', '*.exe', '*.lib', '*.so']
 	symbols = caseMod('bra')
+	symbols = caseMod('br')
 
 #	timing(scan_dir, 5, {'path' : path, 'ignoreList' : ignore_list})
 	
 	file_list = scan_dir(path, ignore_list)
 
 	def filterFileList(fileList):
+		nSymbols = len(symbols)
+		if nSymbols == 1:
+			check_symbols = check_symbols_1
+		elif nSymbols == 2:
+			check_symbols = check_symbols_2
+		else:
+			check_symbols = check_symbols_uni
+
 		fileList = map(lambda x: (check_symbols(x[0], symbols), x), fileList)
 		fileList = filter(lambda x: x[0] != 0, fileList)
 		fileList.sort(key=operator.itemgetter(0, 1))

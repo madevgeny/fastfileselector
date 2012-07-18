@@ -33,7 +33,6 @@
 " Fix wrong toggle after exit by :q
 " Remove code before call longest_substring_size
 " Cache of directories.
-" Dedicated functions check_symbols for 1 and 2 symbols.
 " Write description.
 
 if exists( "g:loaded_FAST_FILE_SELECTOR" )
@@ -236,7 +235,7 @@ def longest_substring_size(str1, str2):
 					res = L[ind]
 	return res
 
-def check_symbols(s, symbols):
+def check_symbols_uni(s, symbols):
 	res = 0
 	prevSymbol = None
 	prevSymbolPos = -1
@@ -264,6 +263,23 @@ def check_symbols(s, symbols):
 
 	return res
 
+def check_symbols_1(s, symbols):
+	if s.find(symbols[0]) == -1:
+		return 0
+	return -1
+
+def check_symbols_2(s, symbols):
+	pos = s.find(symbols[0])
+	if pos != -1:
+		if s.rfind(symbols[1]) < pos:
+			return 0
+	else:
+		return 0
+
+	if s.find(symbols) != -1:
+		return -2
+	return -1
+
 if vim.eval("g:FFS_ignore_case"):
 	import string
 	caseMod = string.lower
@@ -278,6 +294,14 @@ else:
 	fileListVar = 's:file_list'
 
 if len(symbols) != 0:
+	nSymbols = len(symbols)
+	if nSymbols == 1:
+		check_symbols = check_symbols_1
+	elif nSymbols == 2:
+		check_symbols = check_symbols_2
+	else:
+		check_symbols = check_symbols_uni
+
 	fileList = map(lambda x: (check_symbols(x[0], symbols), x), vim.eval(fileListVar))
 	fileList = filter(lambda x: x[0] != 0, fileList)
 	fileList.sort(key=operator.itemgetter(0, 1))
