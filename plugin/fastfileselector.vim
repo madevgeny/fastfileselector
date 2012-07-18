@@ -34,7 +34,6 @@
 " Remove code before call longest_substring_size
 " Cache of directories.
 " Dedicated functions check_symbols for 1 and 2 symbols.
-" Import separate python file with functions.
 " Write description.
 
 if exists( "g:loaded_FAST_FILE_SELECTOR" )
