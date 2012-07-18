@@ -28,6 +28,10 @@ def scan_dir(path, ignoreList):
 			if in_ignore_list(j):
 				dirs.remove(j)
 
+	n = len(path.encode("utf-8"))
+	fileList = map(lambda x: x.encode("utf-8"), fileList)
+	fileList = map(lambda x: (caseMod(x[n:]), x), fileList)
+
 	return fileList
 
 def longest_substring_size(str1, str2):
@@ -93,7 +97,7 @@ if __name__=='__main__':
 	file_list = scan_dir(path, ignore_list)
 
 	def filterFileList(fileList):
-		fileList = map(lambda x: (check_symbols(caseMod(x), symbols), x), fileList)
+		fileList = map(lambda x: (check_symbols(x[0], symbols), x), fileList)
 		fileList = filter(lambda x: x[0] != 0, fileList)
 		fileList.sort(key=operator.itemgetter(0, 1))
 

@@ -21,9 +21,9 @@
 " 				Parameter g:FFS_ignore_list sets list of dirs/files to ignore use Unix shell-style wildcards. Default = ['.*', '*.bak', '~*', '*.obj', '*.pdb', '*.res', '*.dll', '*.idb', '*.exe', '*.lib', '*.so', '*.pyc'].
 "				Parameter g:FFS_ignore_case, if set letters case will be ignored during search. On windows default = 1, on unix default = 0.
 "
-" Version:		1.0.0
+" Version:		0.9.0
 "
-" ChangeLog:	1.0.0:	 Initial version.
+" ChangeLog:	0.9.0:	 Initial version.
 "====================================================================================
 
 " TODO:
@@ -34,6 +34,9 @@
 " Remove code before call longest_substring_size
 " Cache of directories.
 " Dedicated functions check_symbols for 1 and 2 symbols.
+" Highlight common path.
+" Import separate python file with functions.
+" Write description.
 
 if exists( "g:loaded_FAST_FILE_SELECTOR" )
 	finish
@@ -128,17 +131,21 @@ def scan_dir(path, ignoreList):
 			if in_ignore_list(j):
 				dirs.remove(j)
 
+	n = len(path.encode("utf-8"))
+	fileList = map(lambda x: x.encode("utf-8"), fileList)
+	fileList = map(lambda x: (caseMod(x[n:]), x), fileList)
+
 	return fileList
 
 wd = getcwdu()
 path = find_tags(wd)
 if path == None:
-	fileList = scan_dir(wd, vim.eval("g:FFS_ignore_list"))
-else:
-	fileList = scan_dir(path, vim.eval("g:FFS_ignore_list"))
+	path = wd
+	
+fileList = scan_dir(path, vim.eval("g:FFS_ignore_list"))
 
 if len(fileList) != 0:
-	vim.command("let s:file_list = ['%s']" % "','".join(map(lambda x: x.encode("utf-8"), fileList)))
+	vim.command("let s:file_list = [%s]" % ",".join(map(lambda x: "['%s','%s']" % x, fileList)))
 else:
 	vim.command("let s:file_list = []")
 EOF
@@ -155,7 +162,8 @@ fun <SID>OnRefresh()
 
 	cal append(0,s:user_line)
 	exe 'normal dd$'
-	cal append(1,s:filtered_file_list)
+	let fl = map(copy(s:filtered_file_list), 'v:val[1]')
+	cal append(1, fl)
 	exe 'normal! i'
 	autocmd CursorMovedI <buffer> call <SID>OnCursorMovedI()
 endfun
@@ -259,12 +267,12 @@ else:
 	fileListVar = 's:file_list'
 
 if len(symbols) != 0:
-	fileList = map(lambda x: (check_symbols(caseMod(x), symbols), x), vim.eval(fileListVar))
+	fileList = map(lambda x: (check_symbols(x[0], symbols), x), vim.eval(fileListVar))
 	fileList = filter(lambda x: x[0] != 0, fileList)
 	fileList.sort(key=operator.itemgetter(0, 1))
 
 	if len(fileList) != 0:
-		vim.command("let s:filtered_file_list = ['%s']" % "','".join(zip(*fileList)[1]))
+		vim.command("let s:filtered_file_list = [%s]" % ",".join(map(lambda x: "['%s','%s']" % (x[0], x[1]), zip(*fileList)[1])))
 	else:
 		vim.command("let s:filtered_file_list = []")
 else:
@@ -317,6 +325,7 @@ fun! <SID>ToggleFastFileSelectorBuffer()
 		
 		setlocal buftype=nofile
 		setlocal noswapfile
+		setlocal nonumber
 
 		let s:prev_mode = mode()
 		exe 'startinsert'
