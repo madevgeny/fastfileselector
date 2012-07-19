@@ -53,7 +53,9 @@
 " Cache of directories.
 " Add support GetLatestVimScripts.
 " Fix search files with '.
-" Add history.
+" Add history and check compatibility with acp.vim.
+" Don't close buffer after open file. Must be constomized.
+" <Enter> in serach string == open firtst search result.
 
 if exists( "g:loaded_FAST_FILE_SELECTOR" )
 	finish
