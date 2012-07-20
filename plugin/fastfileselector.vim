@@ -46,16 +46,15 @@
 
 " TODO:
 " Add list of known file extentions.
-" Fix highlight of \.
 " Try to fix case insensitive search for non ascii characters
 " Fix wrong toggle after exit by :q
 " Remove code before call longest_substring_size
 " Cache of directories.
 " Add support GetLatestVimScripts.
-" Fix search files with '.
-" Add history and check compatibility with acp.vim.
+" *Add history and check compatibility with acp.vim.
 " Don't close buffer after open file. Must be constomized.
-" <Enter> in serach string == open firtst search result.
+" *<Enter> in serach string == open firtst search result.
+" *Test on acp.vim compatibility.
 
 if exists( "g:loaded_FAST_FILE_SELECTOR" )
 	finish
@@ -187,11 +186,9 @@ if path == None:
 fileList = scan_dir(path, vim.eval("g:FFS_ignore_list"))
 
 vim.command('let s:base_path_length=%d' % len(path.encode("utf-8")))
-
-if len(fileList) != 0:
-	vim.command("let s:file_list=[%s]" % ",".join(map(lambda x: "['%s','%s']" % x, fileList)))
-else:
-	vim.command("let s:file_list=[]")
+vim.command("let s:file_list=[]")
+for i in fileList:
+	vim.command('let s:file_list+=[["%s","%s"]]' % (i[0].replace('\\', '\\\\'), i[1].replace('\\', '\\\\')))
 EOF
 	let s:filtered_file_list = s:file_list
 	call <SID>UpdateSyntax('')
@@ -350,10 +347,9 @@ if len(symbols) != 0:
 	fileList = filter(lambda x: x[0] != 0, fileList)
 	fileList.sort(key=operator.itemgetter(0, 1))
 
-	if len(fileList) != 0:
-		vim.command("let s:filtered_file_list = [%s]" % ",".join(map(lambda x: "['%s','%s']" % (x[0], x[1]), zip(*fileList)[1])))
-	else:
-		vim.command("let s:filtered_file_list = []")
+	vim.command("let s:filtered_file_list=[]")
+	for i in fileList:
+		vim.command('let s:filtered_file_list+=[["%s","%s"]]' % (i[1][0].replace('\\', '\\\\'), i[1][1].replace('\\', '\\\\')))
 else:
 	vim.command("let s:filtered_file_list = s:file_list")
 EOF
