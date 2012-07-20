@@ -168,9 +168,9 @@ def scan_dir(path, ignoreList):
 	for root, dirs, files in walk(path):
 		fileList += [join(root, f) for f in filter(lambda x: not in_ignore_list(x), files)]
 
-		for j in dirs:
-			if in_ignore_list(j):
-				dirs.remove(j)
+		toRemove = filter(in_ignore_list, dirs)
+		for j in toRemove:
+			dirs.remove(j)
 
 	n = len(path.encode("utf-8"))
 	fileList = map(lambda x: x.encode("utf-8"), fileList)
