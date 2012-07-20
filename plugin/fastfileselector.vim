@@ -54,7 +54,6 @@
 " *Add history and check compatibility with acp.vim.
 " Don't close buffer after open file. Must be customized.
 " *<Enter> in serach string == open firtst search result.
-" *Test on acp.vim compatibility.
 
 if exists( "g:loaded_FAST_FILE_SELECTOR" )
 	finish
@@ -377,12 +376,23 @@ fun <SID>GotoFile()
 endfun
 
 fun <SID>OnBufLeave()
+	" Enable acp.vim plugin.
+	if exists(':AcpUnlock')
+		exe 'AcpUnlock'
+	endif
+
 	if s:prev_mode != 'i'
 		exe 'stopinsert'
 	endif
 endfun
 
 fun <SID>OnBufEnter()
+	" Disable acp.vim plugin as cursor callbacks doesn't work if popup menu is
+	" shown.
+	if exists(':AcpLock')
+		exe 'AcpLock'
+	endif
+
 	let s:prev_mode = mode()
 	exe 'startinsert'
 
