@@ -52,7 +52,7 @@
 " Cache of directories.
 " Add support GetLatestVimScripts.
 " *Add history and check compatibility with acp.vim.
-" Don't close buffer after open file. Must be constomized.
+" Don't close buffer after open file. Must be customized.
 " *<Enter> in serach string == open firtst search result.
 " *Test on acp.vim compatibility.
 
