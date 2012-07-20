@@ -402,9 +402,6 @@ fun! <SID>ToggleFastFileSelectorBuffer()
 		setlocal noswapfile
 		setlocal nonumber
 
-		let s:prev_mode = mode()
-		exe 'startinsert'
-
 		let s:user_line=''
 		if !exists("s:first_time")
 			let s:first_time=1
@@ -418,7 +415,7 @@ fun! <SID>ToggleFastFileSelectorBuffer()
 		endif
 		
 		cal <SID>GenFileList()
-		cal <SID>OnRefresh()
+		cal <SID>OnBufEnter()
 	else
 		exe ':wincmd p'
 		exe ':'.s:tm_winnr.'bd!'
