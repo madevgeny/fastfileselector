@@ -45,9 +45,9 @@
 " 				search string. Autocompletion using history also works by
 " 				<Ctrl-X><Ctrl-U>.
 "
-" Version:		0.9.0
+" Version:		0.1.0
 "
-" ChangeLog:	0.9.0:	 Initial version.
+" ChangeLog:	0.1.0:	 Initial version.
 "====================================================================================
 
 if exists( "g:loaded_FAST_FILE_SELECTOR" )
