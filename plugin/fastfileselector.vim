@@ -57,7 +57,6 @@
 " Cache of directories.
 " Don't close buffer after open file. Must be customized.
 " *<Enter> in serach string == open firtst search result.
-" *Fix conflict with Q mapping.
 " Move todo to bitbucket
 
 if exists( "g:loaded_FAST_FILE_SELECTOR" )
@@ -392,8 +391,6 @@ fun <SID>GotoFile()
 	exe ':'.s:tm_winnr.'bd!'
 	let s:tm_winnr=-1
 	exe ':e '.str
-	" Without it you should press Enter once again some times.
-	exe 'normal Q'
 endfun
 
 fun <SID>OnBufLeave()
