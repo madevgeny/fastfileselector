@@ -364,11 +364,14 @@ EOF
 endfun
 
 fun <SID>GotoFile()
-	if !len(s:filtered_file_list) || line('.') == 1
+	if !len(s:filtered_file_list)
 		return
 	endif
 	
 	let str=getline('.')
+	if line('.') == 1
+		let str=getline(2)
+	endif
 
 	if !count(s:ffs_history,s:user_line)
 		if len(s:ffs_history)>=g:FFS_history_size
