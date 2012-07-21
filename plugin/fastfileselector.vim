@@ -32,7 +32,7 @@
 "
 "				Bundle('https://bitbucket.org/madevgeny/fastfileselector.git')
 "
-"				to you Vundle config to install yate.
+"				to you Vundle config to install FileFastSelector.
 "
 " Usage:		Command :FFS toggles visibility of fast file selector buffer.
 " 				Parameter g:FFS_window_height sets height of search buffer. Default = 15.
