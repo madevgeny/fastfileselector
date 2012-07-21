@@ -50,15 +50,6 @@
 " ChangeLog:	0.9.0:	 Initial version.
 "====================================================================================
 
-" TODO:
-" Add list of known file extentions.
-" Try to fix case insensitive search for non ascii characters
-" Remove code before call longest_substring_size
-" Cache of directories.
-" Don't close buffer after open file. Must be customized.
-" *<Enter> in serach string == open firtst search result.
-" Move todo to bitbucket
-
 if exists( "g:loaded_FAST_FILE_SELECTOR" )
 	finish
 endif
