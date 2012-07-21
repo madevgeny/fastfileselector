@@ -38,6 +38,12 @@
 " 				Parameter g:FFS_window_height sets height of search buffer. Default = 15.
 " 				Parameter g:FFS_ignore_list sets list of dirs/files to ignore use Unix shell-style wildcards. Default = ['.*', '*.bak', '~*', '*.obj', '*.pdb', '*.res', '*.dll', '*.idb', '*.exe', '*.lib', '*.so', '*.pyc'].
 "				Parameter g:FFS_ignore_case, if set letters case will be ignored during search. On windows default = 1, on unix default = 0.
+"				Parameter g:FFS_history_size sets the maximum number of
+" 				stored search queries in history. Default = 10.
+"
+" 				To get queries history press <Ctrl-H> in insert or normal mode in
+" 				search string. Autocompletion using history also works by
+" 				<Ctrl-X><Ctrl-U>.
 "
 " Version:		0.9.0
 "
@@ -47,13 +53,12 @@
 " TODO:
 " Add list of known file extentions.
 " Try to fix case insensitive search for non ascii characters
-" Fix wrong toggle after exit by :q
 " Remove code before call longest_substring_size
 " Cache of directories.
-" Add support GetLatestVimScripts.
-" *Add history and check compatibility with acp.vim.
 " Don't close buffer after open file. Must be customized.
 " *<Enter> in serach string == open firtst search result.
+" *Fix conflict with Q mapping.
+" Move todo to bitbucket
 
 if exists( "g:loaded_FAST_FILE_SELECTOR" )
 	finish
@@ -102,6 +107,14 @@ endif
 
 if !exists("s:user_line")
 	let s:user_line = ''
+endif
+
+if !exists("g:FFS_history_size")
+	let g:FFS_history_size = 10
+endif
+
+if !exists("s:ffs_history")
+	let s:ffs_history = []
 endif
 
 command! -bang FFS :call <SID>ToggleFastFileSelectorBuffer()
@@ -367,6 +380,14 @@ fun <SID>GotoFile()
 	
 	let str=getline('.')
 
+	if !count(s:ffs_history,s:user_line)
+		if len(s:ffs_history)>=g:FFS_history_size
+			call remove(s:ffs_history,-1)
+		endif
+		call insert(s:ffs_history,s:user_line)
+	endif
+
+
 	exe ':wincmd p'
 	exe ':'.s:tm_winnr.'bd!'
 	let s:tm_winnr=-1
@@ -399,12 +420,37 @@ fun <SID>OnBufEnter()
 	call <SID>OnRefresh()
 endfun
 
+fun! <SID>ShowHistory()
+	if line('.') == 1
+		call cursor(0,1024)
+		call complete(1,s:ffs_history)
+	endif
+	return ''
+endfun
+
+fun! CompleteFFSHistory(findstart, base)
+ 	if a:findstart
+		return 0
+	else
+		let res = []
+		for m in s:ffs_history
+		  if m =~ '^' . a:base
+			call add(res, m)
+		  endif
+		endfor
+		return res
+	endif
+endfun
+
+
 fun! <SID>ToggleFastFileSelectorBuffer()
 	if !exists("s:tm_winnr") || s:tm_winnr==-1
 		exe "bo".g:FFS_window_height."sp FastFileSelector"
 
 		exe "inoremap <expr> <buffer> <Enter> pumvisible() ? '<CR><C-O>:cal <SID>GotoFile()<CR>' : '<C-O>:cal <SID>GotoFile()<CR>'"
 		exe "noremap <silent> <buffer> <Enter> :cal <SID>GotoFile()<CR>"
+		exe "inoremap <silent> <buffer> <C-H> <C-R>=<SID>ShowHistory()<CR>"
+		exe "noremap <silent> <buffer> <C-H> I<C-R>=<SID>ShowHistory()<CR>"		
 
 		let s:tm_winnr=bufnr("FastFileSelector")
 		
