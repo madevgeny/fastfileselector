@@ -335,7 +335,7 @@ if len(symbols) != 0:
 		check_symbols = check_symbols_uni
 
 	fileList = map(lambda x: (check_symbols(x[0], symbols), x), vim.eval(fileListVar))
-	fileList = filter(lambda x: x[0] != 0, fileList)
+	fileList = filter(operator.itemgetter(0), fileList)
 	fileList.sort(key=operator.itemgetter(0, 1))
 
 	vim.command("let s:filtered_file_list=[]")

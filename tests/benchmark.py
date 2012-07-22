@@ -130,7 +130,7 @@ if __name__=='__main__':
 			check_symbols = check_symbols_uni
 
 		fileList = map(lambda x: (check_symbols(x[0], symbols), x), fileList)
-		fileList = filter(lambda x: x[0] != 0, fileList)
+		fileList = filter(operator.itemgetter(0), fileList)
 		fileList.sort(key=operator.itemgetter(0, 1))
 
 	timing(filterFileList, 5, {'fileList':file_list})
