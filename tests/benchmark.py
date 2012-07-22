@@ -51,25 +51,15 @@ def longest_substring_size(str1, str2):
 	return res
 
 def check_symbols_uni(s, symbols):
-	prevSymbol = None
-	prevSymbolPos = -1
+	prevPos = -1
 	for i in symbols:
-		pos = s.find(i)
+		pos = s[prevPos + 1 : ].find(i)
 		if pos == -1:
 			return 0
 		else:
-			if prevSymbol != None:
-				if pos < prevSymbolPos:
-					pos = s.find(i, pos + 1)
-					if pos == -1:
-						return 0
+			prevPos = pos
 
-			prevSymbol = i
-			prevSymbolPos = pos
-
-	res = longest_substring_size(s, symbols) 
-
-	return res
+	return longest_substring_size(s, symbols)
 
 def check_symbols_1(s, symbols):
 	if s.find(symbols[0]) == -1:
@@ -120,7 +110,7 @@ def timing(f, n, a):
 if __name__=='__main__':
 	path = getcwdu()
 	ignore_list = ['.*', '*.bak', '~*', '*.obj', '*.pdb', '*.res', '*.dll', '*.idb', '*.exe', '*.lib', '*.so']
-	symbols = caseMod('bra')
+	symbols = caseMod('root')
 
 #	timing(scan_dir, 5, {'path' : path, 'ignoreList' : ignore_list})
 	
@@ -141,4 +131,4 @@ if __name__=='__main__':
 		fileList = filter(lambda x: x[0] != 0, fileList)
 		fileList.sort(key=operator.itemgetter(0, 1))
 
-	#timing(filterFileList, 5, {'fileList':file_list})
+	timing(filterFileList, 5, {'fileList':file_list})
