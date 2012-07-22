@@ -37,29 +37,31 @@ def scan_dir(path, ignoreList):
 def longest_substring_size(str1, str2):
 	n1 = len(str1)
 	n2 = len(str2)
+	n2inc = n2 + 1
 
-	L = [0 for i in range((n1 + 1) * (n2 + 1))]
+	L = [0 for i in range((n1 + 1) * n2inc)]
 
 	res = 0
 	for i in range(n1):
 		for j in range(n2):
 			if str1[i] == str2[j]:
-				ind = (i + 1) * n2 + (j + 1)
-				L[ind] = L[i * n2 + j] + 1
+				ind = (i + 1) * n2inc + (j + 1)
+				L[ind] = L[i * n2inc + j] + 1
 				if L[ind] > res:
 					res = L[ind]
+
 	return res
 
 def check_symbols_uni(s, symbols):
-	prevPos = -1
+	prevPos = 0
 	for i in symbols:
-		pos = s[prevPos + 1 : ].find(i)
+		pos = s.find(i, prevPos)
 		if pos == -1:
 			return 0
 		else:
-			prevPos = pos
+			prevPos = pos + 1
 
-	return longest_substring_size(s, symbols)
+	return -longest_substring_size(s, symbols)
 
 def check_symbols_1(s, symbols):
 	if s.find(symbols[0]) == -1:
@@ -132,3 +134,4 @@ if __name__=='__main__':
 		fileList.sort(key=operator.itemgetter(0, 1))
 
 	timing(filterFileList, 5, {'fileList':file_list})
+
