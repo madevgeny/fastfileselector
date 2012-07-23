@@ -22,7 +22,7 @@ def scan_dir(path, ignoreList):
 
 	fileList = []
 	for root, dirs, files in walk(path):
-		fileList += [join(root, f) for f in filter(lambda x: not in_ignore_list(x), files)]
+		fileList += [join(root, f) for f in files if not in_ignore_list(f)]
 		
 		toRemove = filter(in_ignore_list, dirs)
 		for j in toRemove:
@@ -104,7 +104,7 @@ def timing(f, n, a):
 	print f.__name__,
 	r = range(n)
 	t1 = time.clock()
-	for i in r:
+	for _ in r:
 	    f(**a); f(**a); f(**a); f(**a); f(**a); f(**a); f(**a); f(**a); f(**a); f(**a)
 	t2 = time.clock()
 	print round(t2-t1, 3)
@@ -114,7 +114,7 @@ if __name__=='__main__':
 	ignore_list = ['.*', '*.bak', '~*', '*.obj', '*.pdb', '*.res', '*.dll', '*.idb', '*.exe', '*.lib', '*.so']
 	symbols = caseMod('root')
 
-#	timing(scan_dir, 5, {'path' : path, 'ignoreList' : ignore_list})
+	timing(scan_dir, 2, {'path' : path, 'ignoreList' : ignore_list})
 	
 	file_list = scan_dir(path, ignore_list)
 
@@ -129,9 +129,10 @@ if __name__=='__main__':
 		else:
 			check_symbols = check_symbols_uni
 
+		fileList  = []
 		fileList = map(lambda x: (check_symbols(x[0], symbols), x), fileList)
 		fileList = filter(operator.itemgetter(0), fileList)
 		fileList.sort(key=operator.itemgetter(0, 1))
 
-	timing(filterFileList, 5, {'fileList':file_list})
+	#timing(filterFileList, 5, {'fileList':file_list})
 
