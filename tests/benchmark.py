@@ -104,22 +104,22 @@ def timing(f, n, a):
 	print f.__name__,
 	r = range(n)
 	t1 = time.clock()
-	for i in r:
-	    f(**a); f(**a); f(**a); f(**a); f(**a); f(**a); f(**a); f(**a); f(**a); f(**a)
+	for _ in r:
+		f(**a); f(**a); f(**a); f(**a); f(**a); f(**a); f(**a); f(**a); f(**a); f(**a)
 	t2 = time.clock()
 	print round(t2-t1, 3)
 
-if __name__=='__main__':
+if __name__ == '__main__':
 	path = getcwdu()
 	ignore_list = ['.*', '*.bak', '~*', '*.obj', '*.pdb', '*.res', '*.dll', '*.idb', '*.exe', '*.lib', '*.so']
-	symbols = caseMod('root')
+	filter_string = caseMod('root')
 
 #	timing(scan_dir, 5, {'path' : path, 'ignoreList' : ignore_list})
 	
 	file_list = scan_dir(path, ignore_list)
 
 	def filterFileList(fileList):
-		nSymbols = len(symbols)
+		nSymbols = len(filter_string)
 		if nSymbols == 1:
 			check_symbols = check_symbols_1
 		elif nSymbols == 2:
@@ -129,7 +129,7 @@ if __name__=='__main__':
 		else:
 			check_symbols = check_symbols_uni
 
-		fileList = map(lambda x: (check_symbols(x[0], symbols), x), fileList)
+		fileList = map(lambda x: (check_symbols(x[0], filter_string), x), fileList)
 		fileList = filter(operator.itemgetter(0), fileList)
 		fileList.sort(key=operator.itemgetter(0, 1))
 
