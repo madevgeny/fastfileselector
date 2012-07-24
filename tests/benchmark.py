@@ -29,6 +29,7 @@ def scan_dir(path, ignoreList):
 			dirs.remove(j)
 
 	n = len(path.encode("utf-8"))
+
 	fileList = map(lambda x: x.encode("utf-8"), fileList)
 	fileList = map(lambda x: (caseMod(x[n:]), x), fileList)
 
@@ -129,7 +130,6 @@ if __name__=='__main__':
 		else:
 			check_symbols = check_symbols_uni
 
-		fileList  = []
 		fileList = map(lambda x: (check_symbols(x[0], symbols), x), fileList)
 		fileList = filter(operator.itemgetter(0), fileList)
 		fileList.sort(key=operator.itemgetter(0, 1))
