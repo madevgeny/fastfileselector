@@ -45,11 +45,13 @@
 " 				search string. Autocompletion using history also works by
 " 				<Ctrl-X><Ctrl-U>.
 "
-" Version:		0.1.0
+" Version:		0.2.1
 "
-" ChangeLog:	0.2.0: Added support of GetLatestVimScripts.
+" ChangeLog:	0.2.1: Bug fixes and optimization of search.
 "
-"				0.1.0:	 Initial version.
+" 				0.2.0: Added support of GetLatestVimScripts.
+"
+"				0.1.0: Initial version.
 "
 " GetLatestVimScripts: 4142 18299 :AutoInstall: fastfileselector.vim
 "====================================================================================
@@ -172,7 +174,7 @@ def scan_dir(path, ignoreList):
 
 	fileList = []
 	for root, dirs, files in walk(path):
-		fileList += [join(root, f) for f in filter(lambda x: not in_ignore_list(x), files)]
+		fileList += [join(root, f) for f in files if not in_ignore_list(f)]
 
 		toRemove = filter(in_ignore_list, dirs)
 		for j in toRemove:
