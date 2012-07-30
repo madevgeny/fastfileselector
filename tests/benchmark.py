@@ -1,9 +1,12 @@
 import time
 
+import os
 from os import walk, getcwdu
-from os.path import join
+from os.path import join, getctime, getmtime, exists
 from fnmatch import fnmatch
 import operator
+
+import sqlite3
 
 if 1:
 	import string
@@ -11,7 +14,69 @@ if 1:
 else:
 	caseMod = lambda x: x
 
-def scan_dir(path, ignoreList):
+class PathsCache(object):
+	def __init__(self, pathToCache, caseSensitivePaths):
+		self.caseSensitivePaths = caseSensitivePaths
+
+		# Check if database file exists and creates all needed paths.
+		createTable = False
+		if not exists(pathToCache):
+			createTable = True
+			try:
+				os.makedirs(os.path.split(pathToCache)[0])
+			except OSError:
+				pass
+
+		self.conn = None
+		with sqlite3.connect(pathToCache) as conn:
+			self.conn = conn
+			if createTable:
+				c = conn.cursor()
+				c.executescript("""
+					CREATE TABLE roots (id INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT);
+					CREATE TABLE paths (id INTEGER PRIMARY KEY AUTOINCREMENT, root_id INTEGER SECONDARY KEY, parent INTEGER SECONDARY KEY, path TEXT, modtime INTEGER);
+				""")
+				conn.commit()
+				c.close()
+
+	def getCachedPaths(self, path):
+		if self.conn == None:
+			return []
+
+		if self.caseSensitivePaths:
+			addon = ''
+		else:
+			addon = 'COLLATE NOCASE'
+
+		c = self.conn.cursor()
+
+		# get parent id
+		c.execute('SELECT id FROM paths WHERE path = "%s" %s' % (path, addon))
+		c.close()
+
+		return []
+
+	def updateCachedPaths(self, root, paths):
+		if self.conn == None:
+			return
+
+		if self.caseSensitivePaths:
+			addon = ''
+		else:
+			addon = 'COLLATE NOCASE'
+
+		c = self.conn.cursor()
+
+		# get root id
+		c.execute('SELECT id FROM paths WHERE path = "%s" %s' % (root, addon))
+
+
+		c.execute("INSERT OR REPLACE INTO paths VALUES
+
+		self.conn.commit()
+		c.close()
+
+def scan_dir(path, ignoreList, cache_provider):
 	ignoreList = map(caseMod, ignoreList)
 	def in_ignore_list(f):
 		for i in ignoreList:
@@ -115,7 +180,7 @@ if __name__=='__main__':
 	ignore_list = ['.*', '*.bak', '~*', '*.obj', '*.pdb', '*.res', '*.dll', '*.idb', '*.exe', '*.lib', '*.so']
 	symbols = caseMod('root')
 
-	timing(scan_dir, 2, {'path' : path, 'ignoreList' : ignore_list})
+#	timing(scan_dir, 2, {'path' : path, 'ignoreList' : ignore_list})
 	
 	file_list = scan_dir(path, ignore_list)
 
@@ -136,3 +201,4 @@ if __name__=='__main__':
 
 	#timing(filterFileList, 5, {'fileList':file_list})
 
+	init_cache('K:/home_projects/fastfileselector/tests/db.db')
