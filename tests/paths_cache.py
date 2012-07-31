@@ -10,6 +10,11 @@ class PathsCache(object):
 	def __init__(self, pathToCache, caseSensitivePaths):
 		self.caseSensitivePaths = caseSensitivePaths
 
+		if self.caseSensitivePaths:
+			self.caseSelectAddon = ''
+		else:
+			self.caseSelectAddon = 'COLLATE NOCASE'
+
 		# Check if database file exists and creates all needed paths.
 		createTable = False
 		if not os.path.exists(pathToCache):
@@ -36,15 +41,10 @@ class PathsCache(object):
 		if self.conn == None:
 			return []
 
-		if self.caseSensitivePaths:
-			addon = ''
-		else:
-			addon = 'COLLATE NOCASE'
-
 		c = self.conn.cursor()
 
 		# get parent id
-		c.execute('SELECT id FROM roots WHERE path = "%s" %s' % (path, addon))
+		c.execute('SELECT id FROM roots WHERE path = "%s" %s' % (path, self.caseSelectAddon))
 		res = c.fetchone()
 		if res == None:
 			c.close()
@@ -82,11 +82,6 @@ class PathsCache(object):
 		if self.conn == None:
 			return
 
-		if self.caseSensitivePaths:
-			addon = ''
-		else:
-			addon = 'COLLATE NOCASE'
-
 		c = self.conn.cursor()
 
 		# root must have separator at the end
@@ -94,12 +89,12 @@ class PathsCache(object):
 			root += os.pathsep
 
 		# get root id
-		c.execute('SELECT id FROM roots WHERE path = "%s" %s' % (root, addon))
+		c.execute('SELECT id FROM roots WHERE path = "%s" %s' % (root, self.caseSelectAddon))
 
 		res = c.fetchone()
 		if res == None:
 			c.execute("INSERT OR REPLACE INTO roots VALUES(NULL, '%s', %s)" % (root, getModTime(root)))
-			c.execute('SELECT id FROM roots WHERE path = "%s" %s' % (root, addon))
+			c.execute('SELECT id FROM roots WHERE path = "%s" %s' % (root, self.caseSelectAddon))
 			res = c.fetchone()
 			if res == None:
 				return
@@ -119,7 +114,7 @@ class PathsCache(object):
 		# insert files
 		# TODO: Batch insert
 		for i in paths:
-			c.execute('SELECT id FROM paths WHERE root_id = %s, path = "%s" %s' % (root_id, i[0], addon))
+			c.execute('SELECT id FROM paths WHERE root_id = %s, path = "%s" %s' % (root_id, i[0], self.caseSelectAddon))
 			path_id = c.fetchone()
 			if path_id == None:
 				continue
