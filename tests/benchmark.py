@@ -14,44 +14,60 @@ if 1:
 else:
 	caseMod = lambda x: x
 
-def scan_dir(path, ignoreList, cache):
-	path = os.abspath(path)
+def in_ignore_list(f):
 	ignoreList = map(caseMod, ignoreList)
-	def in_ignore_list(f):
-		for i in ignoreList:
-			if fnmatch(caseMod(f), i):
-				return True
-		return False
+	for i in ignoreList:
+		if fnmatch(caseMod(f), i):
+			return True
+	return False
 
-	cachedPaths = cache.getCachedPaths(path)
+def scan_dir(path, checkOnIgnores, cache):
+	path = os.abspath(path)
+	pathLen = len(path)
 
 	fileList = []
+	cachedPaths = cache.getCachedPaths(path)
+	if len(cachedPaths):
+		if cachedPaths[0][0][1] == getModTime(fp):
+			for i in cachedPaths:
+				for j in i[1]:
+					fullPath.append(join(path, i[0][0], j))
+			return [x]	
+
 	addToCache = []
 	for root, dirs, files in walk(path):
-		fileList += [join(root, f) for f in files if not in_ignore_list(f)]
-		
-		toRemove = filter(in_ignore_list, dirs)
-		for j in toRemove:
-			dirs.remove(j)
-
 		toRemove = []
 		for i in dirs:
-			fp = join(root, dirs)
+			fp = join(root, i)
 			fpmt = getModTime(fp)
-			
+			fp = fp.encode("utf-8")
+			fpl = len(fp)
+		
+			inCache = False
 			for j in cachedPaths:
 				if fpmt == j[1] and fp == j[0]:
 					toRemove.append(i)
-					fileList += [join(root, f) for f in files if not in_ignore_list(f)]
+
+					# add cached paths
+					for k in cachedPaths:
+						if k[0].find(fp) == fpl:
+							fileList.append((k[0], k[3]))
+
+					inCache = True
+
 					break
-			if (fp, getModTime(fp)) in cachedPaths:
-				toRemove.append(i)
-				fileList += [join(root, f) for f in files if not in_ignore_list(f)]
+
+			if not inCache:
+				
+				fileList.append((root[pathLen : ].encode("utf-8"), [x.encode("utf-8") for x in files]))
+					fileList += [join(root, f) for f in files if not in_ignore_list(f)]
+
+		for j in toRemove:
+			dirs.remove(j)
 
 
 	n = len(path.encode("utf-8"))
 
-	fileList = map(lambda x: x.encode("utf-8"), fileList)
 	fileList = map(lambda x: (caseMod(x[n:]), x), fileList)
 
 	return fileList
