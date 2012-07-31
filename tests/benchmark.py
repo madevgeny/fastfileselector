@@ -6,68 +6,31 @@ from os.path import join
 from fnmatch import fnmatch
 import operator
 
-from paths_cache import PathsCache, getModTime
-
 if 1:
 	import string
 	caseMod = string.lower
 else:
 	caseMod = lambda x: x
 
-def in_ignore_list(f):
+def scan_dir(path, ignoreList):
 	ignoreList = map(caseMod, ignoreList)
-	for i in ignoreList:
-		if fnmatch(caseMod(f), i):
-			return True
-	return False
+	def in_ignore_list(f):
+		for i in ignoreList:
+			if fnmatch(caseMod(f), i):
+				return True
 
-def scan_dir(path, checkOnIgnores, cache):
-	path = os.abspath(path)
-	pathLen = len(path)
+		return False
 
 	fileList = []
-	cachedPaths = cache.getCachedPaths(path)
-	if len(cachedPaths):
-		if cachedPaths[0][0][1] == getModTime(fp):
-			for i in cachedPaths:
-				for j in i[1]:
-					fullPath.append(join(path, i[0][0], j))
-			return [x]	
-
-	addToCache = []
 	for root, dirs, files in walk(path):
-		toRemove = []
-		for i in dirs:
-			fp = join(root, i)
-			fpmt = getModTime(fp)
-			fp = fp.encode("utf-8")
-			fpl = len(fp)
-		
-			inCache = False
-			for j in cachedPaths:
-				if fpmt == j[1] and fp == j[0]:
-					toRemove.append(i)
+		fileList += [join(root, f) for f in files if not in_ignore_list(f)]
 
-					# add cached paths
-					for k in cachedPaths:
-						if k[0].find(fp) == fpl:
-							fileList.append((k[0], k[3]))
-
-					inCache = True
-
-					break
-
-			if not inCache:
-				
-				fileList.append((root[pathLen : ].encode("utf-8"), [x.encode("utf-8") for x in files]))
-					fileList += [join(root, f) for f in files if not in_ignore_list(f)]
-
+		toRemove = filter(in_ignore_list, dirs)
 		for j in toRemove:
 			dirs.remove(j)
 
-
 	n = len(path.encode("utf-8"))
-
+	fileList = map(lambda x: x.encode("utf-8"), fileList)
 	fileList = map(lambda x: (caseMod(x[n:]), x), fileList)
 
 	return fileList
@@ -152,9 +115,9 @@ if __name__ == '__main__':
 	ignore_list = ['.*', '*.bak', '~*', '*.obj', '*.pdb', '*.res', '*.dll', '*.idb', '*.exe', '*.lib', '*.so']
 	filter_string = caseMod('root')
 
-#	timing(scan_dir, 2, {'path' : path, 'ignoreList' : ignore_list})
+	timing(scan_dir, 1, {'path' : path, 'ignoreList' : ignore_list})
 	
-	file_list = scan_dir(path, ignore_list)
+#	file_list = scan_dir(path, ignore_list)
 
 	def filterFileList(fileList):
 		nSymbols = len(filter_string)
@@ -173,6 +136,6 @@ if __name__ == '__main__':
 
 	#timing(filterFileList, 5, {'fileList':file_list})
 
-	pc = PathsCache('K:/home_projects/fastfileselector/tests/db.db', False)
+	#pc = PathsCache('K:/home_projects/fastfileselector/tests/db.db', False)
 
-	pc.updateCachedPaths('K:\\www.av8n.com', [])
+	#pc.updateCachedPaths('K:\\www.av8n.com', [])
