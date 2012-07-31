@@ -14,6 +14,9 @@ if 1:
 else:
 	caseMod = lambda x: x
 
+def getModTime(path):
+	return max(getctime(path), getmtime(path))
+
 class PathsCache(object):
 	def __init__(self, pathToCache, caseSensitivePaths):
 		self.caseSensitivePaths = caseSensitivePaths
@@ -33,13 +36,14 @@ class PathsCache(object):
 			if createTable:
 				c = conn.cursor()
 				c.executescript("""
-					CREATE TABLE roots (id INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT);
-					CREATE TABLE paths (id INTEGER PRIMARY KEY AUTOINCREMENT, root_id INTEGER SECONDARY KEY, parent INTEGER SECONDARY KEY, path TEXT, modtime INTEGER);
+					CREATE TABLE roots (id INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT, modtime INTEGER);
+					CREATE TABLE paths (id INTEGER PRIMARY KEY AUTOINCREMENT, root_id INTEGER SECONDARY KEY, path TEXT, modtime INTEGER);
+					CREATE TABLE files (path_id INTEGER PRIMARY KEY, file_name TEXT);
 				""")
 				conn.commit()
 				c.close()
 
-	def getCachedPaths(self, path):
+	def getCachedPaths(self, root):
 		if self.conn == None:
 			return []
 
@@ -51,10 +55,39 @@ class PathsCache(object):
 		c = self.conn.cursor()
 
 		# get parent id
-		c.execute('SELECT id FROM paths WHERE path = "%s" %s' % (path, addon))
-		c.close()
+		c.execute('SELECT id FROM roots WHERE path = "%s" %s' % (path, addon))
+		res = c.fetchone()
+		if res == None:
+			c.close()
+			return []
+		
+		root_id = res[0]
 
-		return []
+		# get cached paths
+		res = []
+		c.execute('SELECT id, path, modtime FROM paths WHERE root_id = %s' % (root_id))
+		paths = c.fetchmany()
+		while len(paths):
+			res += paths
+			paths = c.fetchmany()
+
+		files = []
+		for i in res:
+			c.execute('SELECT file_name FROM files WHERE path_id = %s' % (i[0]))
+			fs = c.fetchmany()
+			while True:
+				r = c.fetchmany()
+				if not len(r):
+					break
+
+				fs += r
+			files += fs
+
+		c.close()
+		
+		res = zip([(x[1], x[2]) for x in res], files)
+
+		return res
 
 	def updateCachedPaths(self, root, paths):
 		if self.conn == None:
@@ -67,31 +100,82 @@ class PathsCache(object):
 
 		c = self.conn.cursor()
 
+		# root must have separator at the end
+		if root[-1] != os.pathsep:
+			root += os.pathsep
+
 		# get root id
-		c.execute('SELECT id FROM paths WHERE path = "%s" %s' % (root, addon))
+		c.execute('SELECT id FROM roots WHERE path = "%s" %s' % (root, addon))
 
+		res = c.fetchone()
+		if res == None:
+			c.execute("INSERT OR REPLACE INTO roots VALUES(NULL, '%s', %s)" % (root, getModTime(root)))
+			c.execute('SELECT id FROM roots WHERE path = "%s" %s' % (root, addon))
+			res = c.fetchone()
+			if res == None:
+				return
 
-		c.execute("INSERT OR REPLACE INTO paths VALUES
+		root_id = res[0]
+		
+		# remove root from paths
+		rootLength = len(root)
+		paths = [(x[0][rootLength:], x[1], x[2]) for x in paths]
+
+		# insert paths
+		# TODO: Batch insert
+		for i in paths:
+			c.execute("INSERT OR REPLACE INTO paths VALUES(NULL, %s, '%s', %s)" % (root_id, i[0], i[1]))
+		self.conn.commit()
+
+		# insert files
+		# TODO: Batch insert
+		for i in paths:
+			c.execute('SELECT id FROM paths WHERE root_id = %s, path = "%s" %s' % (root_id, i[0], addon))
+			path_id = c.fetchone()
+			if path_id == None:
+				continue
+			
+			for j in i[2]:
+				c.execute("INSERT OR REPLACE INTO files VALUES(%s, '%s')" % (path_id[0], j))
 
 		self.conn.commit()
+
 		c.close()
 
-def scan_dir(path, ignoreList, cache_provider):
+def scan_dir(path, ignoreList, cache):
+	path = os.abspath(path)
 	ignoreList = map(caseMod, ignoreList)
 	def in_ignore_list(f):
 		for i in ignoreList:
 			if fnmatch(caseMod(f), i):
 				return True
-
 		return False
 
+	cachedPaths = cache.getCachedPaths(path)
+
 	fileList = []
+	addToCache = []
 	for root, dirs, files in walk(path):
 		fileList += [join(root, f) for f in files if not in_ignore_list(f)]
 		
 		toRemove = filter(in_ignore_list, dirs)
 		for j in toRemove:
 			dirs.remove(j)
+
+		toRemove = []
+		for i in dirs:
+			fp = join(root, dirs)
+			fpmt = getModTime(fp)
+			
+			for j in cachedPaths:
+				if fpmt == j[1] and fp == j[0]:
+					toRemove.append(i)
+					fileList += [join(root, f) for f in files if not in_ignore_list(f)]
+					break
+			if (fp, getModTime(fp)) in cachedPaths:
+				toRemove.append(i)
+				fileList += [join(root, f) for f in files if not in_ignore_list(f)]
+
 
 	n = len(path.encode("utf-8"))
 
@@ -201,4 +285,6 @@ if __name__ == '__main__':
 
 	#timing(filterFileList, 5, {'fileList':file_list})
 
-	init_cache('K:/home_projects/fastfileselector/tests/db.db')
+	pc = PathsCache('K:/home_projects/fastfileselector/tests/db.db', False)
+
+	pc.updateCachedPaths('K:\\www.av8n.com', [])
