@@ -47,11 +47,14 @@
 "
 " Version:		0.2.1
 "
-" ChangeLog:	0.2.1: Bug fixes and optimization of search.
+" ChangeLog:	0.2.2:	Fixed immediate opening of first file after closing
+"						history menu.
 "
-" 				0.2.0: Added support of GetLatestVimScripts.
+" 				0.2.1:	Bug fixes and optimization of search.
 "
-"				0.1.0: Initial version.
+" 				0.2.0:	Added support of GetLatestVimScripts.
+"
+"				0.1.0:	Initial version.
 "
 " GetLatestVimScripts: 4142 18299 :AutoInstall: fastfileselector.vim
 "====================================================================================
@@ -353,14 +356,18 @@ EOF
 	endif
 endfun
 
-fun <SID>GotoFile()
+fun <SID>GotoFile(feelLucky)
 	if !len(s:filtered_file_list)
 		return
 	endif
 	
 	let str=getline('.')
-	if line('.') == 1
-		let str=getline(2)
+	if a:feelLucky
+		if line('.') == 1
+			let str=getline(2)
+		endif
+	else
+		return
 	endif
 
 	if !count(s:ffs_history,s:user_line)
@@ -369,7 +376,6 @@ fun <SID>GotoFile()
 		endif
 		call insert(s:ffs_history,s:user_line)
 	endif
-
 
 	exe ':wincmd p'
 	exe ':'.s:tm_winnr.'bd!'
@@ -427,8 +433,8 @@ fun! <SID>ToggleFastFileSelectorBuffer()
 	if !exists("s:tm_winnr") || s:tm_winnr==-1
 		exe "bo".g:FFS_window_height."sp FastFileSelector"
 
-		exe "inoremap <expr> <buffer> <Enter> pumvisible() ? '<CR><C-O>:cal <SID>GotoFile()<CR>' : '<C-O>:cal <SID>GotoFile()<CR>'"
-		exe "noremap <silent> <buffer> <Enter> :cal <SID>GotoFile()<CR>"
+		exe "inoremap <expr> <buffer> <Enter> pumvisible() ? '<C-O>:cal <SID>GotoFile(0)<CR>' : '<C-O>:cal <SID>GotoFile(1)<CR>'"
+		exe "noremap <silent> <buffer> <Enter> :cal <SID>GotoFile(1)<CR>"
 		exe "inoremap <silent> <buffer> <C-H> <C-R>=<SID>ShowHistory()<CR>"
 		exe "noremap <silent> <buffer> <C-H> I<C-R>=<SID>ShowHistory()<CR>"		
 
