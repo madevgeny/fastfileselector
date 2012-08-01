@@ -1,6 +1,5 @@
 import time
 
-import os
 from os import walk, getcwdu
 from os.path import join 
 from fnmatch import fnmatch
@@ -18,7 +17,6 @@ def scan_dir(path, ignoreList):
 		for i in ignoreList:
 			if fnmatch(caseMod(f), i):
 				return True
-
 		return False
 
 	fileList = []
@@ -29,9 +27,8 @@ def scan_dir(path, ignoreList):
 		for j in toRemove:
 			dirs.remove(j)
 
-	n = len(path.encode("utf-8"))
-	fileList = map(lambda x: x.encode("utf-8"), fileList)
-	fileList = map(lambda x: (caseMod(x[n:]), x), fileList)
+	n = len(path)
+	fileList = [(caseMod(x[n:].encode("utf-8")), x.encode("utf-8")) for x in fileList]
 
 	return fileList
 

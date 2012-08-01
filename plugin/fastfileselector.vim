@@ -86,7 +86,7 @@ if !exists("g:FFS_ignore_case")
 endif
 
 if !exists("g:FFS_ignore_list")
-	let g:FFS_ignore_list = ['.*', '*.bak', '~*', '*.obj', '*.pdb', '*.res', '*.dll', '*.idb', '*.exe', '*.lib', '*.so', '*.pyc']
+	let g:FFS_ignore_list = ['.*', '*.bak', '~*', '*.obj', '*.pdb', '*.res', '*.dll', '*.idb', '*.exe', '*.lib', '*.suo', '*.sdf', '*.exp', '*.so', '*.pyc']
 endif
 
 if !exists("s:file_list")
@@ -180,9 +180,8 @@ def scan_dir(path, ignoreList):
 		for j in toRemove:
 			dirs.remove(j)
 
-	n = len(path.encode("utf-8"))
-	fileList = map(lambda x: x.encode("utf-8"), fileList)
-	fileList = map(lambda x: (caseMod(x[n:]), x), fileList)
+	n = len(path)
+	fileList = [(caseMod(x[n:].encode("utf-8")), x.encode("utf-8")) for x in fileList]
 
 	return fileList
 
