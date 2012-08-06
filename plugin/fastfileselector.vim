@@ -49,6 +49,8 @@
 "
 " ChangeLog:	0.2.2:	Fixed immediate opening of first file after closing
 "						history menu.
+"						Removed '\' and '/' from color highlighting as they
+"						may produce errors.
 "
 " 				0.2.1:	Bug fixes and optimization of search.
 "
@@ -127,16 +129,22 @@ fun <SID>UpdateSyntax(str)
 	
 	exe 'syn match FFS_base_path #^.\{'.s:base_path_length.'\}# nextgroup=Identifier'
 	if a:str != ''
-		if g:FFS_ignore_case == 0
-			exe 'syn match FFS_matches #['.a:str.']#'
+		let str = substitute(a:str, "[\\/]", "", "g")
+		if str != ''
+			if g:FFS_ignore_case == 0
+				exe 'syn match FFS_matches #['.str.']#'
+			else
+				exe 'syn match FFS_matches #['.tolower(str).toupper(str).']#'
+			endif
 		else
-			exe 'syn match FFS_matches #['.tolower(a:str).toupper(a:str).']#'
+			exe 'hi clear FFS_matches'
 		endif
 	else
 		exe 'hi clear FFS_matches'
 	endif
 endfun
 
+"sss/bbb\ddd
 fun <SID>GenFileList()
 python << EOF
 
