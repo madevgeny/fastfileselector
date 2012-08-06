@@ -144,7 +144,6 @@ fun <SID>UpdateSyntax(str)
 	endif
 endfun
 
-"sss/bbb\ddd
 fun <SID>GenFileList()
 python << EOF
 
