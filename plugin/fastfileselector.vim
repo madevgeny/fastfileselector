@@ -45,7 +45,7 @@
 " 				search string. Autocompletion using history also works by
 " 				<Ctrl-X><Ctrl-U>.
 "
-" Version:		0.2.1
+" Version:		0.2.2
 "
 " ChangeLog:	0.2.2:	Fixed autocompletion by <Ctrl-X><Ctrl-U>.
 " 						Fixed immediate opening of first file after closing
@@ -226,7 +226,7 @@ fun <SID>OnRefresh()
 	cal append(1, fl)
 	exe 'normal! i'
 
-	autocmd CursorMovedI <buffer> call <SID>OnCursorMoved(1)
+	autocmd CursorMovedI <buffer> call <SID>OnCursorMoved(1, 0)
 endfun
 
 fun! CompleteFFSHistory(findstart, base)
@@ -243,7 +243,7 @@ fun! CompleteFFSHistory(findstart, base)
 	endif
 endfun
 
-fun <SID>OnCursorMoved(ins_mode)
+fun <SID>OnCursorMoved(ins_mode, force_update)
 	if line('.') > 1
 		setlocal cul
 		setlocal noma
@@ -260,7 +260,7 @@ fun <SID>OnCursorMoved(ins_mode)
 		endif
 		
 		let str=getline('.')
-		if s:user_line!=str
+		if s:user_line!=str || a:force_update
 			let save_cursor = winsaveview()
 python << EOF
 import vim
@@ -433,7 +433,7 @@ fun! <SID>ToggleFastFileSelectorBuffer()
 	if !exists("s:tm_winnr") || s:tm_winnr==-1
 		exe "bo".g:FFS_window_height."sp FastFileSelector"
 
-		exe "inoremap <expr> <buffer> <Enter> pumvisible() ? '<CR><Up><End>' : '<C-O>:cal <SID>GotoFile()<CR>'"
+		exe "inoremap <expr> <buffer> <Enter> pumvisible() ? '<CR><Up><End><C-O>:call <SID>OnCursorMoved(1, 1)<CR>' : '<C-O>:cal <SID>GotoFile()<CR>'"
 		exe "noremap <silent> <buffer> <Enter> :cal <SID>GotoFile()<CR>"
 		exe "inoremap <silent> <buffer> <C-H> <C-R>=<SID>ShowHistory()<CR>"
 		exe "noremap <silent> <buffer> <C-H> I<C-R>=<SID>ShowHistory()<CR>"		
@@ -450,8 +450,8 @@ fun! <SID>ToggleFastFileSelectorBuffer()
 
 			autocmd BufUnload <buffer> exe 'let s:tm_winnr=-1'
 			autocmd BufLeave <buffer> call <SID>OnBufLeave()
-			autocmd CursorMoved <buffer> call <SID>OnCursorMoved(0)
-			autocmd CursorMovedI <buffer> call <SID>OnCursorMoved(1)
+			autocmd CursorMoved <buffer> call <SID>OnCursorMoved(0, 0)
+			autocmd CursorMovedI <buffer> call <SID>OnCursorMoved(1, 0)
 			autocmd VimResized <buffer> call <SID>OnRefresh()
 			autocmd BufEnter <buffer> call <SID>OnBufEnter()
 		endif
