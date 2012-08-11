@@ -363,18 +363,14 @@ EOF
 	endif
 endfun
 
-fun <SID>GotoFile(feelLucky)
+fun <SID>GotoFile()
 	if !len(s:filtered_file_list)
 		return
 	endif
 	
 	let str=getline('.')
-	if a:feelLucky
-		if line('.') == 1
-			let str=getline(2)
-		endif
-	else
-		return
+	if line('.') == 1
+		let str=getline(2)
 	endif
 
 	if !count(s:ffs_history,s:user_line)
