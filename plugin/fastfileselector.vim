@@ -440,7 +440,7 @@ fun! <SID>ToggleFastFileSelectorBuffer()
 	if !exists("s:tm_winnr") || s:tm_winnr==-1
 		exe "bo".g:FFS_window_height."sp FastFileSelector"
 
-		exe "inoremap <expr> <buffer> <Enter> pumvisible() ? '<C-O>:cal <SID>GotoFile(0)<CR>' : '<C-O>:cal <SID>GotoFile(1)<CR>'"
+		exe "inoremap <expr> <buffer> <Enter> pumvisible() ? '<CR><Up><End>' : '<C-O>:cal <SID>GotoFile(1)<CR>'"
 		exe "noremap <silent> <buffer> <Enter> :cal <SID>GotoFile(1)<CR>"
 		exe "inoremap <silent> <buffer> <C-H> <C-R>=<SID>ShowHistory()<CR>"
 		exe "noremap <silent> <buffer> <C-H> I<C-R>=<SID>ShowHistory()<CR>"		
