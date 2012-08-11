@@ -47,7 +47,8 @@
 "
 " Version:		0.2.1
 "
-" ChangeLog:	0.2.2:	Fixed immediate opening of first file after closing
+" ChangeLog:	0.2.2:	Fixed autocompletion by <Ctrl-X><Ctrl-U>.
+" 						Fixed immediate opening of first file after closing
 "						history menu.
 "						Removed '\' and '/' from color highlighting as they
 "						may produce errors.
@@ -225,29 +226,39 @@ fun <SID>OnRefresh()
 	cal append(1, fl)
 	exe 'normal! i'
 
-	autocmd CursorMovedI <buffer> call <SID>OnCursorMovedI()
+	autocmd CursorMovedI <buffer> call <SID>OnCursorMoved(1)
 endfun
 
-fun <SID>OnCursorMoved()
-	let l = getpos(".")[1]
-	if l > 1
-		setlocal cul
-		setlocal noma
+fun! CompleteFFSHistory(findstart, base)
+ 	if a:findstart
+		return 0
 	else
-		setlocal nocul
-		setlocal ma
+		let res = []
+		for m in s:ffs_history
+		  if m =~ '^' . a:base
+			call add(res, m)
+		  endif
+		endfor
+		return res
 	endif
 endfun
 
-fun <SID>OnCursorMovedI()
-	let l = getpos(".")[1]
-	if l > 1
+fun <SID>OnCursorMoved(ins_mode)
+	if line('.') > 1
 		setlocal cul
 		setlocal noma
+
+		setlocal completefunc=''
 	else
 		setlocal nocul
 		setlocal ma
 
+		setlocal completefunc=CompleteFFSHistory
+
+		if a:ins_mode == 0
+			return
+		endif
+		
 		let str=getline('.')
 		if s:user_line!=str
 			let save_cursor = winsaveview()
@@ -418,26 +429,12 @@ fun! <SID>ShowHistory()
 	return ''
 endfun
 
-fun! CompleteFFSHistory(findstart, base)
- 	if a:findstart
-		return 0
-	else
-		let res = []
-		for m in s:ffs_history
-		  if m =~ '^' . a:base
-			call add(res, m)
-		  endif
-		endfor
-		return res
-	endif
-endfun
-
 fun! <SID>ToggleFastFileSelectorBuffer()
 	if !exists("s:tm_winnr") || s:tm_winnr==-1
 		exe "bo".g:FFS_window_height."sp FastFileSelector"
 
-		exe "inoremap <expr> <buffer> <Enter> pumvisible() ? '<CR><Up><End>' : '<C-O>:cal <SID>GotoFile(1)<CR>'"
-		exe "noremap <silent> <buffer> <Enter> :cal <SID>GotoFile(1)<CR>"
+		exe "inoremap <expr> <buffer> <Enter> pumvisible() ? '<CR><Up><End>' : '<C-O>:cal <SID>GotoFile()<CR>'"
+		exe "noremap <silent> <buffer> <Enter> :cal <SID>GotoFile()<CR>"
 		exe "inoremap <silent> <buffer> <C-H> <C-R>=<SID>ShowHistory()<CR>"
 		exe "noremap <silent> <buffer> <C-H> I<C-R>=<SID>ShowHistory()<CR>"		
 
@@ -453,8 +450,8 @@ fun! <SID>ToggleFastFileSelectorBuffer()
 
 			autocmd BufUnload <buffer> exe 'let s:tm_winnr=-1'
 			autocmd BufLeave <buffer> call <SID>OnBufLeave()
-			autocmd CursorMoved <buffer> call <SID>OnCursorMoved()
-			autocmd CursorMovedI <buffer> call <SID>OnCursorMovedI()
+			autocmd CursorMoved <buffer> call <SID>OnCursorMoved(0)
+			autocmd CursorMovedI <buffer> call <SID>OnCursorMoved(1)
 			autocmd VimResized <buffer> call <SID>OnRefresh()
 			autocmd BufEnter <buffer> call <SID>OnBufEnter()
 		endif
