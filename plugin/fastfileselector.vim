@@ -185,7 +185,7 @@ def scan_dir(path, ignoreList):
 
 	fileList = []
 	for root, dirs, files in walk(path):
-		fileList += [join(root, f) for f in files if not in_ignore_list(f)]
+		fileList.extend([join(root, f) for f in files if not in_ignore_list(f)])
 
 		toRemove = filter(in_ignore_list, dirs)
 		for j in toRemove:
