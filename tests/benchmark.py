@@ -21,7 +21,7 @@ def scan_dir(path, ignoreList):
 
 	fileList = []
 	for root, dirs, files in walk(path):
-		fileList += [join(root, f) for f in files if not in_ignore_list(f)]
+		fileList.extend([join(root, f) for f in files if not in_ignore_list(f)])
 
 		toRemove = filter(in_ignore_list, dirs)
 		for j in toRemove:
@@ -113,8 +113,8 @@ if __name__ == '__main__':
 	filter_string = caseMod('root')
 
 	timing(scan_dir, 1, {'path' : path, 'ignoreList' : ignore_list})
-	
-#	file_list = scan_dir(path, ignore_list)
+
+	file_list = scan_dir(path, ignore_list)
 
 	def filterFileList(fileList):
 		nSymbols = len(filter_string)
@@ -131,8 +131,4 @@ if __name__ == '__main__':
 		fileList = filter(operator.itemgetter(0), fileList)
 		fileList.sort(key=operator.itemgetter(0, 1))
 
-	#timing(filterFileList, 5, {'fileList':file_list})
-
-	#pc = PathsCache('K:/home_projects/fastfileselector/tests/db.db', False)
-
-	#pc.updateCachedPaths('K:\\www.av8n.com', [])
+	timing(filterFileList, 5, {'fileList':file_list})
