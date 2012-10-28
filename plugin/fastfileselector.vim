@@ -45,9 +45,11 @@
 " 				search string. Autocompletion using history also works by
 " 				<Ctrl-X><Ctrl-U>.
 "
-" Version:		0.2.2
+" Version:		0.2.3
 "
-" ChangeLog:	0.2.2:	Fixed autocompletion by <Ctrl-X><Ctrl-U>.
+" ChangeLog:	0.2.3:	Removed yate buffer from buffers list.
+"
+"				0.2.2:	Fixed autocompletion by <Ctrl-X><Ctrl-U>.
 " 						Fixed immediate opening of first file after closing
 "						history menu.
 "						Removed '\' and '/' from color highlighting as they
@@ -154,7 +156,7 @@ from fnmatch import fnmatch
 
 import vim
 
-if vim.eval("g:FFS_ignore_case"):
+f vim.eval("g:FFS_ignore_case"):
 	import string
 	caseMod = string.lower
 else:
@@ -441,6 +443,8 @@ fun! <SID>ToggleFastFileSelectorBuffer()
 		let s:tm_winnr=bufnr("FastFileSelector")
 		
 		setlocal buftype=nofile
+		setlocal bufhidden=wipe
+		setlocal nobuflisted		
 		setlocal noswapfile
 		setlocal nonumber
 
