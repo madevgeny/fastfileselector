@@ -47,7 +47,8 @@
 "
 " Version:		0.2.3
 "
-" ChangeLog:	0.2.3:	Fixed case sensitive search.
+" ChangeLog:	0.2.3:	Fixed opening files with spaces in path.
+"						Fixed case sensitive search.
 "						Removed fastfileselector buffer from buffers list.
 "
 "				0.2.2:	Fixed autocompletion by <Ctrl-X><Ctrl-U>.
@@ -397,7 +398,7 @@ fun <SID>GotoFile()
 	exe ':wincmd p'
 	exe ':'.s:tm_winnr.'bd!'
 	let s:tm_winnr=-1
-	exe ':e '.str
+	exe ':e '.substitute(str, " ", "\\\\ ", "g")
 endfun
 
 fun <SID>OnBufLeave()
