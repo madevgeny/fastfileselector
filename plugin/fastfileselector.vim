@@ -156,7 +156,7 @@ from fnmatch import fnmatch
 
 import vim
 
-f vim.eval("g:FFS_ignore_case"):
+if vim.eval("g:FFS_ignore_case"):
 	import string
 	caseMod = string.lower
 else:
