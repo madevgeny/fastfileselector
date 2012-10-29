@@ -47,7 +47,8 @@
 "
 " Version:		0.2.3
 "
-" ChangeLog:	0.2.3:	Removed yate buffer from buffers list.
+" ChangeLog:	0.2.3:	Fixed case sensitive search.
+"						Removed fastfileselector buffer from buffers list.
 "
 "				0.2.2:	Fixed autocompletion by <Ctrl-X><Ctrl-U>.
 " 						Fixed immediate opening of first file after closing
@@ -156,7 +157,7 @@ from fnmatch import fnmatch
 
 import vim
 
-if vim.eval("g:FFS_ignore_case"):
+if int(vim.eval("g:FFS_ignore_case")):
 	import string
 	caseMod = string.lower
 else:
@@ -334,7 +335,7 @@ def check_symbols_3(s, symbols):
 
 	return -1
 
-if vim.eval("g:FFS_ignore_case"):
+if int(vim.eval("g:FFS_ignore_case")):
 	import string
 	caseMod = string.lower
 else:
