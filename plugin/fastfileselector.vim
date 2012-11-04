@@ -40,14 +40,18 @@
 "				Parameter g:FFS_ignore_case, if set letters case will be ignored during search. On windows default = 1, on unix default = 0.
 "				Parameter g:FFS_history_size sets the maximum number of
 " 				stored search queries in history. Default = 10.
+" 				Parameter g:FFS_be_silent_on_python_lack, if set error message
+" 				on absence python support will be suppressed.
 "
 " 				To get queries history press <Ctrl-H> in insert or normal mode in
 " 				search string. Autocompletion using history also works by
 " 				<Ctrl-X><Ctrl-U>.
 "
-" Version:		0.2.3
+" Version:		0.3.0
 "
-" ChangeLog:	0.2.3:	Fixed opening files with spaces in path.
+" ChangeLog:	0.3.0:	Added parameter g:FFS_be_silent_on_python_lack to suppress error message if vim doesn't have python support.
+"
+"				0.2.3:	Fixed opening files with spaces in path.
 "						Fixed case sensitive search.
 "						Removed fastfileselector buffer from buffers list.
 "
@@ -74,12 +78,14 @@ let g:loaded_FAST_FILE_SELECTOR = 1
 
 " Check to make sure the Vim version 700 or greater.
 if v:version < 700
-  echo "Sorry, FastFileSelector only runs with Vim 7.0 and greater"
+  echo "Sorry, FastFileSelector only runs with Vim 7.0 and greater."
   finish
 endif
 
 if !has('python')
-    echo "Error: Required vim compiled with +python"
+	if !exists("g:FFS_be_silent_on_python_lack") || !g:FFS_be_silent_on_python_lack
+	    echo "Error: Required vim compiled with +python, to suppress this message set variable g:FFS_be_silent_on_python_lack."
+	endif
     finish
 endif
 
