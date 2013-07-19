@@ -47,9 +47,11 @@
 " 				search string. Autocompletion using history also works by
 " 				<Ctrl-X><Ctrl-U>.
 "
-" Version:		0.3.0
+" Version:		0.3.1
 "
-" ChangeLog:	0.3.0:	Fixed issue with TabBar plugin.
+" ChangeLog:	0.3.1:	Removed message "press any key to continue" in some cases. 
+"
+"				0.3.0:	Fixed issue with TabBar plugin.
 "						Added parameter g:FFS_be_silent_on_python_lack to suppress error message if vim doesn't have python support.
 "
 "				0.2.3:	Fixed opening files with spaces in path.
@@ -134,7 +136,7 @@ command! -bang FFS :call <SID>ToggleFastFileSelectorBuffer()
 
 fun <SID>UpdateSyntax(str)
 	" Apply color changes
-	setlocal syntax=on
+	silent setlocal syntax=on
 
 	hi def link FFS_matches Identifier
 	hi def link FFS_base_path Comment	
