@@ -49,7 +49,8 @@
 "
 " Version:		0.3.1
 "
-" ChangeLog:	0.3.1:	Removed message "press any key to continue" in some cases. 
+" ChangeLog:	0.3.1:	Removed message "press any key to continue" in some cases. Thanks to Dmitry Frank.
+"						Fixed error on closing FFS window. Thanks to Dmitry Frank.
 "
 "				0.3.0:	Fixed issue with TabBar plugin.
 "						Added parameter g:FFS_be_silent_on_python_lack to suppress error message if vim doesn't have python support.
@@ -529,16 +530,13 @@ fun! <SID>ToggleFastFileSelectorBuffer()
 		setlocal nonumber
 
 		let s:user_line=''
-		if !exists("s:first_time")
-			let s:first_time=1
-
-			autocmd BufUnload <buffer> exe 'let s:tm_winnr=-1'
-			autocmd BufLeave <buffer> call <SID>OnBufLeave()
-			autocmd CursorMoved <buffer> call <SID>OnCursorMoved(0, 0)
-			autocmd CursorMovedI <buffer> call <SID>OnCursorMoved(1, 0)
-			autocmd VimResized <buffer> call <SID>OnRefresh()
-			autocmd BufEnter <buffer> call <SID>OnBufEnter()
-		endif
+		
+		autocmd BufUnload <buffer> exe 'let s:tm_winnr=-1'
+		autocmd BufLeave <buffer> call <SID>OnBufLeave()
+		autocmd CursorMoved <buffer> call <SID>OnCursorMoved(0, 0)
+		autocmd CursorMovedI <buffer> call <SID>OnCursorMoved(1, 0)
+		autocmd VimResized <buffer> call <SID>OnRefresh()
+		autocmd BufEnter <buffer> call <SID>OnBufEnter()
 		
 		cal <SID>GenFileList()
 		cal <SID>OnBufEnter()
