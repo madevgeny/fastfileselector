@@ -50,7 +50,7 @@
 " Version:		0.3.1
 "
 " ChangeLog:	0.3.1:	Removed message "press any key to continue" in some cases. Thanks to Dmitry Frank.
-"						Fixed error on closing FFS window. Thanks to Dmitry Frank.
+"						Fixed error on closing FFS window in some cases. Thanks to Dmitry Frank.
 "
 "				0.3.0:	Fixed issue with TabBar plugin.
 "						Added parameter g:FFS_be_silent_on_python_lack to suppress error message if vim doesn't have python support.
