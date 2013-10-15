@@ -161,7 +161,6 @@ endfun
 
 fun <SID>GenFileList()
 python << EOF
-
 from os import walk, getcwdu
 from os.path import join, isfile, abspath, split
 from fnmatch import fnmatch
@@ -189,7 +188,7 @@ def find_tags(path):
 	return p
 
 def scan_dir(path, ignoreList):
-	ignoreList = map(caseMod, ignoreList)
+	ignoreList = [caseMod(x) for x in ignoreList]
 	def in_ignore_list(f):
 		for i in ignoreList:
 			if fnmatch(caseMod(f), i):
@@ -201,7 +200,7 @@ def scan_dir(path, ignoreList):
 	for root, dirs, files in walk(path):
 		fileList.extend([join(root, f) for f in files if not in_ignore_list(f)])
 
-		toRemove = filter(in_ignore_list, dirs)
+		toRemove = [x for x in dirs if in_ignore_list(x)]
 		for j in toRemove:
 			dirs.remove(j)
 
