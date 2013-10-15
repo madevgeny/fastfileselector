@@ -86,7 +86,7 @@ if v:version < 700
   finish
 endif
 
-if !has('python')
+if !has('python') && !has('python3')
 	if !exists("g:FFS_be_silent_on_python_lack") || !g:FFS_be_silent_on_python_lack
 	    echo "Error: Required vim compiled with +python, to suppress this message set variable g:FFS_be_silent_on_python_lack."
 	endif
