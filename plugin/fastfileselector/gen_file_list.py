@@ -8,6 +8,8 @@ except ImportError:
 from os.path import join, isfile, abspath, split
 from fnmatch import fnmatch
 
+import sys
+
 import vim
 
 if int(vim.eval("g:FFS_ignore_case")):
@@ -59,8 +61,12 @@ if path == None:
 	
 fileList = scan_dir(path, vim.eval("g:FFS_ignore_list"))
 
+if sys.version_info[0] < 3:
+	fileList = [(x[0].encode('utf-8'), x[1].encode('utf-8')) for x in fileList]
+	path = path.encode('utf-8')
+
 vim.command('let s:base_path_length=%d' % len(path))
 vim.command('let s:file_list=[]')
 for i in fileList:
-	vim.command('let s:file_list+=[["%s","%s"]]' % (str(i[0]).replace('\\', '\\\\'), (str(i[1]).replace('\\', '\\\\'))))
+	vim.command('let s:file_list+=[["%s","%s"]]' % (i[0].replace('\\', '\\\\'), (i[1].replace('\\', '\\\\'))))
 
