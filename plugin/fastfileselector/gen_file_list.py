@@ -13,7 +13,6 @@ import sys
 import vim
 
 if int(vim.eval("g:FFS_ignore_case")):
-	import string
 	caseMod = str.lower
 else:
 	caseMod = lambda x: x
@@ -41,32 +40,32 @@ def scan_dir(path, ignoreList):
 
 		return False
 
-	fileList = []
+	res = []
 	for root, dirs, files in walk(path):
-		fileList.extend([join(root, f) for f in files if not in_ignore_list(f)])
+		res.extend([join(root, f) for f in files if not in_ignore_list(f)])
 
 		toRemove = [x for x in dirs if in_ignore_list(x)]
 		for j in toRemove:
 			dirs.remove(j)
 
 	n = len(path)
-	fileList = [(caseMod(x[n:]), x) for x in fileList]
+	res = [(caseMod(x[n:]), x) for x in res]
 
-	return fileList
+	return res
 
 wd = getcwdu()
-path = find_tags(wd)
-if path == None:
-	path = wd
+rootPath = find_tags(wd)
+if rootPath == None:
+	rootPath = wd
 	
-fileList = scan_dir(path, vim.eval("g:FFS_ignore_list"))
+fileList = scan_dir(rootPath, vim.eval("g:FFS_ignore_list"))
 
 if sys.version_info[0] < 3:
-	fileList = [(x[0].encode('utf-8'), x[1].encode('utf-8')) for x in fileList]
-	path = path.encode('utf-8')
+	fileList = [(fn[0].encode('utf-8'), fn[1].encode('utf-8')) for fn in fileList]
+	rootPath = rootPath.encode('utf-8')
 
-vim.command('let s:base_path_length=%d' % len(path))
+vim.command('let s:base_path_length=%d' % len(rootPath))
 vim.command('let s:file_list=[]')
-for i in fileList:
-	vim.command('let s:file_list+=[["%s","%s"]]' % (i[0].replace('\\', '\\\\'), (i[1].replace('\\', '\\\\'))))
+for fn in fileList:
+	vim.command('let s:file_list+=[["%s","%s"]]' % (fn[0].replace('\\', '\\\\'), (fn[1].replace('\\', '\\\\'))))
 

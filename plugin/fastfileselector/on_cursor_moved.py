@@ -72,15 +72,15 @@ if int(vim.eval("g:FFS_ignore_case")):
 else:
 	caseMod = lambda x: x
 
-symbols = caseMod(vim.eval('str'))
+smbs = caseMod(vim.eval('str'))
 oldSymbols = caseMod(vim.eval('s:user_line'))
-if symbols.find(oldSymbols) != -1:
+if smbs.find(oldSymbols) != -1:
 	fileListVar = 's:filtered_file_list'
 else:
 	fileListVar = 's:file_list'
 
-if len(symbols) != 0:
-	nSymbols = len(symbols)
+if len(smbs) != 0:
+	nSymbols = len(smbs)
 	if nSymbols == 1:
 		check_symbols = check_symbols_1
 	elif nSymbols == 2:
@@ -90,12 +90,12 @@ if len(symbols) != 0:
 	else:
 		check_symbols = check_symbols_uni
 
-	fileList = [(check_symbols(x[0], symbols), x) for x in vim.eval(fileListVar)]
+	fileList = [(check_symbols(x[0], smbs), x) for x in vim.eval(fileListVar)]
 	fileList = [x for x in fileList if operator.itemgetter(0)]
 	fileList.sort(key=operator.itemgetter(0, 1))
 
 	vim.command("let s:filtered_file_list=[]")
-	for i in fileList:
-		vim.command('let s:filtered_file_list+=[["%s","%s"]]' % (i[1][0].replace('\\', '\\\\'), i[1][1].replace('\\', '\\\\')))
+	for fn in fileList:
+		vim.command('let s:filtered_file_list+=[["%s","%s"]]' % (fn[1][0].replace('\\', '\\\\'), fn[1][1].replace('\\', '\\\\')))
 else:
 	vim.command("let s:filtered_file_list = s:file_list")
