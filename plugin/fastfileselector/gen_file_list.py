@@ -13,7 +13,8 @@ import sys
 import vim
 
 if int(vim.eval("g:FFS_ignore_case")):
-	caseMod = str.lower
+	# don't replace by str.lower as on some builds you will get unicode strings
+	caseMod = lambda x: x.lower()
 else:
 	caseMod = lambda x: x
 

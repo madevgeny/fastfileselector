@@ -47,9 +47,10 @@
 " 				search string. Autocompletion using history also works by
 " 				<Ctrl-X><Ctrl-U>.
 "
-" Version:		0.3.2
+" Version:		0.3.3
 "
-" ChangeLog:	0.3.2:	Support of vim builds with enabled python3 support.
+" ChangeLog:	0.3.3:	Fixed work on some vim builds.
+"				0.3.2:	Support of vim builds with enabled python3 support.
 "
 "				0.3.1:	Removed message "press any key to continue" in some cases. Thanks to Dmitry Frank.
 "						Fixed error on closing FFS window in some cases. Thanks to Dmitry Frank.
