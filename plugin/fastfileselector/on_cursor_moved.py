@@ -93,9 +93,9 @@ if len(smbs) != 0:
 	fileList = [(check_symbols(x[0], smbs), x) for x in vim.eval(fileListVar)]
 	fileList = [x for x in fileList if operator.itemgetter(0)]
 	fileList.sort(key=operator.itemgetter(0, 1))
-
+	
 	vim.command("let s:filtered_file_list=[]")
-	for fn in fileList:
-		vim.command('let s:filtered_file_list+=[["%s","%s"]]' % (fn[1][0].replace('\\', '\\\\'), fn[1][1].replace('\\', '\\\\')))
+	ffl = vim.bindeval('s:filtered_file_list')
+	ffl.extend([vim.List([fn[1][0], fn[1][1]]) for fn in fileList])
 else:
 	vim.command("let s:filtered_file_list = s:file_list")
