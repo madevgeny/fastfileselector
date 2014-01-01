@@ -96,6 +96,6 @@ if len(smbs) != 0:
 	
 	vim.command("let s:filtered_file_list=[]")
 	ffl = vim.bindeval('s:filtered_file_list')
-	ffl.extend([vim.List([fn[1][0], fn[1][1]]) for fn in fileList])
+	ffl.extend([(fn[1][0], fn[1][1]) for fn in fileList])
 else:
 	vim.command("let s:filtered_file_list = s:file_list")
