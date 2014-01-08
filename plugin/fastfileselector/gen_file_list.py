@@ -66,7 +66,7 @@ if sys.version_info[0] < 3:
 	rootPath = rootPath.encode('utf-8')
 
 vim.command('let s:base_path_length=%d' % len(rootPath))
-vim.command('let s:file_list=[]')
-for fn in fileList:
-	vim.command('let s:file_list+=[["%s","%s"]]' % (fn[0].replace('\\', '\\\\'), (fn[1].replace('\\', '\\\\'))))
 
+vim.command('let s:file_list=[]')
+fl = vim.bindeval('s:file_list')
+fl.extend(fileList)

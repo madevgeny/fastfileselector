@@ -84,8 +84,8 @@ endif
 let g:loaded_FAST_FILE_SELECTOR = 1
 
 " Check to make sure the Vim version 700 or greater.
-if v:version < 700
-  echo "Sorry, FastFileSelector only runs with Vim 7.0 and greater."
+if v:version < 704
+  echo "Sorry, FastFileSelector only runs with Vim 7.4 and greater."
   finish
 endif
 
